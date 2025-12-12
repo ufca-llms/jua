@@ -10,20 +10,14 @@ def evaluate_sbert(
     qrels: dict[str, dict[str, str]]):
 
     model_name_or_path = model_name
-    max_length = 512
-    query_prompt_name = "s2p_query"
 
     dense_model = models.SentenceBERT(
-        model_name_or_path,
-        max_length=max_length,
-        prompt_names={"query": None, "passage": None},
-        trust_remote_code=True,
+        model_name_or_path
     )
 
     model = DRES(
         dense_model,
-        batch_size=128,
-        corpus_chunk_size=50000,
+        batch_size=128
     )
     retriever = EvaluateRetrieval(model, score_function="cos_sim")
 

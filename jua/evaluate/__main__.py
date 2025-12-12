@@ -5,6 +5,8 @@ from jua.evaluate.bm25 import evaluate_bm25
 from jua.evaluate.dense_hf import evaluate_dense_hf
 from jua.evaluate.sbert import evaluate_sbert
 from jua.evaluate.openai_embeddings import evaluate_openai_embeddings
+from jua.evaluate.reranking_dense import evaluate_reranking_dense
+from jua.evaluate.reranking_monot5 import evaluate_reranking_monot5
 
 def main(model_name: str, model_type: str, dataset_path: str):
     corpus, queries, qrels = load_dataset(dataset_path)
@@ -18,6 +20,10 @@ def main(model_name: str, model_type: str, dataset_path: str):
         evaluate_sbert(model_name, corpus, queries, qrels)
     elif model_type == "openai":
         evaluate_openai_embeddings(model_name, corpus, queries, qrels)
+    elif model_type == "reranking_dense":
+        evaluate_reranking_dense(corpus, queries, qrels,model_name)
+    elif model_type == "reranking_monot5":
+        evaluate_reranking_monot5(corpus, queries, qrels, model_name, token_false="▁no", token_true="▁yes")
 
 def load_dataset(dataset_path: str):
     corpus_path = os.path.join(dataset_path, "corpus.jsonl")

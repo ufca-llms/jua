@@ -17,10 +17,10 @@ def evaluate_openai_embeddings(
     retriever = EvaluateRetrieval(model, score_function="cos_sim")
 
     results = retriever.encode_and_retrieve(corpus, queries)
-
+    
     json.dump(results, open("results/openai_embeddings.json", "w"))
 
-    ndcg, _map, recall, precision = retriever.evaluate(qrels, results, retriever.k_values)
+    ndcg, _map, recall, precision = retriever.evaluate(qrels, results, retriever.k_values,ignore_identical_ids=False)
     
     print(f"NDCG: {ndcg}, MAP: {_map}, Recall: {recall}, Precision: {precision}")
     # mrr = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
