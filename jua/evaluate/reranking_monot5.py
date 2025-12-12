@@ -3,6 +3,19 @@ from jua.models.bm25 import CustomBM25
 import json
 from beir.reranking import Rerank
 from beir.reranking.models import MonoT5
+from transformers import MT5ForConditionalGeneration
+
+# Monkey patch to fix compatibility with newer transformers versions
+# The 'past' parameter was deprecated in favor of 'past_key_values'
+_original_forward = MT5ForConditionalGeneration.forward
+
+def _patched_forward(self, *args, **kwargs):
+    # Convert 'past' to 'past_key_values' if present
+    if 'past' in kwargs and 'past_key_values' not in kwargs:
+        kwargs['past_key_values'] = kwargs.pop('past')
+    return _original_forward(self, *args, **kwargs)
+
+MT5ForConditionalGeneration.forward = _patched_forward
 
 def evaluate_reranking_monot5(
         corpus: dict[str, dict[str, str]], 
@@ -30,4 +43,4 @@ def evaluate_reranking_monot5(
         "Recall": recall,
         "Precision": precision
     }, open(f"results/{model_name}_reranked_metrics.json", "w"))
-    json.dump(rerank_results, open(f"results/{model_name}_reranked_metrics.json", "w")) 
+    json.dump(rerank_results, open(f"results/{model_name}_reranked_results.json", "w")) 

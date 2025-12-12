@@ -19,13 +19,39 @@ dependencies = [
     "pystemmer (>=3.0.0,<4.0.0)",
     "transformers (>=4.57.3,<5.0.0)",
     "openai (>=2.9.0,<3.0.0)",
-    "dotenv (>=0.9.9,<0.10.0)",
+    "python-dotenv (>=0.19.0,<1.0.0)",
     "tiktoken (>=0.12.0,<0.13.0)",
     "joblib (>=1.5.2,<2.0.0)",
     "pillow (>=12.0.0,<13.0.0)",
     "sentencepiece (>=0.2.1,<0.3.0)",
 ]
 
+
+[tool.poetry]
+name = "jua"
+version = "0.1.0"
+description = "JUÁ — An Information Retrieval Corpus of Public Audit Court Rulings"
+authors = ["Jayr <jayralencarpereira@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12"
+pandas = ">=2.3.3,<3.0.0"
+xlrd = ">=2.0.2,<3.0.0"
+requests = ">=2.32.5,<3.0.0"
+beautifulsoup4 = ">=4.14.3,<5.0.0"
+rank-bm25 = ">=0.2.2,<0.3.0"
+numpy = ">=2.3.5,<3.0.0"
+tqdm = ">=4.67.1,<5.0.0"
+bm25s = ">=0.2.14,<0.3.0"
+pystemmer = ">=3.0.0,<4.0.0"
+transformers = ">=4.57.3,<5.0.0"
+openai = ">=2.9.0,<3.0.0"
+python-dotenv = ">=0.19.0,<1.0.0"
+tiktoken = ">=0.12.0,<0.13.0"
+joblib = ">=1.5.2,<2.0.0"
+pillow = ">=12.0.0,<13.0.0"
+sentencepiece = ">=0.2.1,<0.3.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
