@@ -26,6 +26,11 @@ class Dataset:
         self.__df["ENUNCIADO"] = self.__df["ENUNCIADO"].apply(lambda x: re.sub(r"SÚMULA TCU (\d+):", "", x).strip())
         # remove examples with EXCERTO or ENUNCIADO empty
         self.__df = self.__df[self.__df["EXCERTO"].notna() & self.__df["ENUNCIADO"].notna()]
+        # remove examples with NUMACORDAO or ANOACORDAO empty
+        self.__df = self.__df[self.__df["NUMACORDAO"].notna() & self.__df["ANOACORDAO"].notna()]
+        # remove examples with excerto in ["Não foi possível obter o conteúdo.","Digite o conteúdo do excerto."]
+        self.__df = self.__df[~self.__df["EXCERTO"].isin(["Não foi possível obter o conteúdo.","Digite aqui o conteúdo do Excerto."])]
+        self.__df["title"] = self.__df.apply(lambda x: f"{x['NUMACORDAO']}/{x['ANOACORDAO']}", axis=1)
         return self.__df
     
     def bm25_scoring(self):
@@ -40,6 +45,7 @@ class Dataset:
         The testing will contain the top 10% of the dataset by BM25_RANK (harder questions)
         """
         self.__df = self.bm25_scoring()
+        self.__df.to_csv("data/jurisprudencia-selecionada-bm25.csv", index=False)
         self.__df_test = self.__df.sort_values(by="BM25_RANK", ascending=False).head(int(len(self.__df) * 0.1))
         self.__df_train = self.__df.sort_values(by="BM25_RANK", ascending=False).iloc[int(len(self.__df) * 0.1):]
         return self.__df_train, self.__df_test
@@ -57,9 +63,9 @@ class Dataset:
             for query in queries:
                 f.write(json.dumps(query, ensure_ascii=False) + "\n")
 
-        corpus = self.__df_train[["KEY", "EXCERTO"]].to_dict(orient="records")
+        corpus = self.__df[["title", "KEY", "EXCERTO"]].to_dict(orient="records")
         # rename KEY column to _id and EXCERTO column to text
-        corpus = [{"_id": corpus["KEY"], "text": corpus["EXCERTO"]} for corpus in corpus]
+        corpus = [{"_id": corpus["KEY"], "title": corpus["title"], "text": corpus["EXCERTO"]} for corpus in corpus]
         # save corpus to jsonlines file
         with open(os.path.join(directory, "corpus.jsonl"), "w", encoding="utf-8") as f:
             for doc in corpus:
@@ -73,9 +79,9 @@ class Dataset:
         # save train qrels to json file
         train_qrels_df.to_csv(os.path.join(directory,'qrels', "train.tsv"), index=False, sep="\t")
         test_qrels_df = pd.DataFrame({
-            "query_id": self.__df_test["KEY"],
-            "corpus_id": self.__df_test["KEY"],
-            "relevance": 1
+            "query-id": self.__df_test["KEY"],
+            "corpus-id": self.__df_test["KEY"],
+            "score": 1
         })
         # save test qrels to json file
         test_qrels_df.to_csv(os.path.join(directory,'qrels', "test.tsv"), index=False, sep="\t")
