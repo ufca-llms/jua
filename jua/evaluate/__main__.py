@@ -27,7 +27,7 @@ def main(model_name: str, model_type: str, dataset_path: str):
 
 def load_dataset(dataset_path: str):
     corpus_path = os.path.join(dataset_path, "corpus.jsonl")
-    query_path = os.path.join(dataset_path, "queries.jsonl")
+    query_path = os.path.join(dataset_path, "queries_with_questions.jsonl")
     qrels_path = os.path.join(dataset_path,'qrels', "test.tsv")
     print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
     corpus, queries, qrels = GenericDataLoader(
