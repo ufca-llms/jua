@@ -30,9 +30,9 @@ def evaluate_reranking_monot5(
     results = retriever.retrieve(corpus, queries)
 
     cross_encoder_model = MonoT5(model_name, token_false=token_false, token_true=token_true)
-    reranker = Rerank(cross_encoder_model, batch_size=128)
+    reranker = Rerank(cross_encoder_model, batch_size=256)
 
-    rerank_results = reranker.rerank(corpus, queries, results, top_k=100)
+    rerank_results = reranker.rerank(corpus, queries, results, top_k=1000)
 
     ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, rerank_results, retriever.k_values)
 
