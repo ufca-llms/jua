@@ -23,14 +23,15 @@ def evaluate_reranking_monot5(
         qrels: dict[str, dict[str, str]],
         model_name: str,
         token_false: str = "_no",
-        token_true: str = "_yes"
+        token_true: str = "_yes",
+        batch_size: int = 128
     ):
     model = CustomBM25(index_path="./data/bm25_index", language="pt")
     retriever = EvaluateRetrieval(model)
     results = retriever.retrieve(corpus, queries)
 
     cross_encoder_model = MonoT5(model_name, token_false=token_false, token_true=token_true)
-    reranker = Rerank(cross_encoder_model, batch_size=256)
+    reranker = Rerank(cross_encoder_model, batch_size=batch_size)
 
     rerank_results = reranker.rerank(corpus, queries, results, top_k=1000)
 

@@ -8,7 +8,7 @@ from jua.evaluate.openai_embeddings import evaluate_openai_embeddings
 from jua.evaluate.reranking_dense import evaluate_reranking_dense
 from jua.evaluate.reranking_monot5 import evaluate_reranking_monot5
 
-def main(model_name: str, model_type: str, dataset_path: str):
+def main(model_name: str, model_type: str, dataset_path: str, batch_size: int):
     corpus, queries, qrels = load_dataset(dataset_path)
 
     
@@ -17,11 +17,11 @@ def main(model_name: str, model_type: str, dataset_path: str):
     elif model_type == "dense_hf":
         evaluate_dense_hf(model_name, corpus, queries, qrels)
     elif model_type == "sbert":
-        evaluate_sbert(model_name, corpus, queries, qrels)
+        evaluate_sbert(model_name, corpus, queries, qrels,batch_size)
     elif model_type == "openai":
-        evaluate_openai_embeddings(model_name, corpus, queries, qrels)
+        evaluate_openai_embeddings(model_name, corpus, queries, qrels,batch_size)
     elif model_type == "reranking_dense":
-        evaluate_reranking_dense(corpus, queries, qrels,model_name)
+        evaluate_reranking_dense(corpus, queries, qrels,model_name,batch_size)
     elif model_type == "reranking_monot5":
         evaluate_reranking_monot5(corpus, queries, qrels, model_name, token_false="▁no", token_true="▁yes")
 
@@ -43,7 +43,8 @@ if __name__ == "__main__":
     parser.add_argument("--model_name", type=str, help="Model name",default=None)
     parser.add_argument("--model_type", type=str, help="Model type", default="bm25")
     parser.add_argument("--dataset_path", type=str, default="./jua-dataset",help="Dataset path")
+    parser.add_argument("--batch_size", type=int, default=128, help="Batch size")
 
     args = parser.parse_args()
 
-    main(args.model_name, args.model_type, args.dataset_path)
+    main(args.model_name, args.model_type, args.dataset_path, args.batch_size)

@@ -7,7 +7,8 @@ def evaluate_sbert(
     model_name: str, 
     corpus: dict[str, dict[str, str]], 
     queries: dict[str, str], 
-    qrels: dict[str, dict[str, str]]):
+    qrels: dict[str, dict[str, str]],
+    batch_size: int):
 
     model_name_or_path = model_name
 
@@ -17,7 +18,7 @@ def evaluate_sbert(
 
     model = DRES(
         dense_model,
-        batch_size=128
+        batch_size=batch_size
     )
     retriever = EvaluateRetrieval(model, score_function="cos_sim")
 
