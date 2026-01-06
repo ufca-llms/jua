@@ -23,7 +23,15 @@ def evaluate_sbert(
     retriever = EvaluateRetrieval(model, score_function="cos_sim")
 
     results = retriever.retrieve(corpus, queries)
-    json.dump(results, open(f"results/sbert_{model_name}.json", "w"))
+
+    c = 0
+    for q, r in results.items():
+        if q in r:
+            c += 1
+    print(f"Number of queries with at least one relevant document: {c}")
+
+    safe_model_name = model_name.replace("/", "_")
+    json.dump(results, open(f"results/sbert_{safe_model_name}.json", "w"))
 
     ndcg, _map, recall, precision = retriever.evaluate(qrels, results, retriever.k_values,ignore_identical_ids=False)
     mrr = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
@@ -41,4 +49,4 @@ def evaluate_sbert(
         "recall": recall,
         "precision": precision,
         "mrr": mrr
-    }, open(f"results/sbert_{model_name}_metrics.json", "w"))
+    }, open(f"results/sbert_{safe_model_name}_metrics.json", "w"))
