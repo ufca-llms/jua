@@ -1,0 +1,7 @@
+beir
+bm25s
+PyStemmer
+openai
+dotenv
+tiktoken
+sentencepiece

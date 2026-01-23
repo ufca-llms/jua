@@ -209,3 +209,5 @@ data/
 jua-dataset/
 results/
 embeddings/
+myenv/
+jua-dataset.zip

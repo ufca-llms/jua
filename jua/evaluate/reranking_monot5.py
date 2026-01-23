@@ -8,6 +8,9 @@ from beir.reranking.models import MonoT5
 from beir.reranking.models.mono_t5 import greedy_decode, T5BatchTokenizer
 from transformers import AutoTokenizer
 
+import os
+os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
+
 # Monkey patch greedy_decode to fix compatibility with newer transformers versions
 def patched_greedy_decode(model, input_ids, length, attention_mask, return_last_logits):
     """Patched version that removes 'past' keyword argument and caching."""
@@ -27,7 +30,9 @@ def patched_greedy_decode(model, input_ids, length, attention_mask, return_last_
             attention_mask=attention_mask,
             use_cache=True
         )
+        
         outputs = model(**model_inputs)  # (batch_size, cur_len, vocab_size)
+        
         next_token_logits = outputs[0][:, -1, :]  # (batch_size, vocab_size)
         decode_ids = torch.cat([
             decode_ids,
@@ -62,10 +67,10 @@ def evaluate_reranking_monot5(
     retriever = EvaluateRetrieval(model)
     results = retriever.retrieve(corpus, queries)
 
-    cross_encoder_model = MonoT5(model_name, token_false=token_false, token_true=token_true)
+    cross_encoder_model = MonoT5(model_name, token_false=token_false, token_true=token_true, use_amp=False)
     reranker = Rerank(cross_encoder_model, batch_size=batch_size)
 
-    rerank_results = reranker.rerank(corpus, queries, results, top_k=1000)
+    rerank_results = reranker.rerank(corpus, queries, results, top_k=100)
 
     ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, rerank_results, retriever.k_values)
 

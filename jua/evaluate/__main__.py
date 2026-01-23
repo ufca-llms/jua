@@ -10,7 +10,6 @@ from jua.evaluate.reranking_monot5 import evaluate_reranking_monot5
 
 def main(model_name: str, model_type: str, dataset_path: str, batch_size: int):
     corpus, queries, qrels = load_dataset(dataset_path)
-
     
     if model_type == "bm25":
         evaluate_bm25(corpus, queries, qrels)
@@ -23,12 +22,12 @@ def main(model_name: str, model_type: str, dataset_path: str, batch_size: int):
     elif model_type == "reranking_dense":
         evaluate_reranking_dense(corpus, queries, qrels,model_name,batch_size)
     elif model_type == "reranking_monot5":
-        evaluate_reranking_monot5(corpus, queries, qrels, model_name, token_false="▁no", token_true="▁yes")
+        evaluate_reranking_monot5(corpus, queries, qrels, model_name, token_false="▁no", token_true="▁yes",batch_size=batch_size)
 
 def load_dataset(dataset_path: str):
     corpus_path = os.path.join(dataset_path, "corpus.jsonl")
     query_path = os.path.join(dataset_path, "queries_with_questions.jsonl")
-    qrels_path = os.path.join(dataset_path,'qrels', "test.tsv")
+    qrels_path = os.path.join(dataset_path,'qrels', "test_small.tsv")
     print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
     corpus, queries, qrels = GenericDataLoader(
         corpus_file=corpus_path, 
@@ -36,7 +35,6 @@ def load_dataset(dataset_path: str):
         qrels_file=qrels_path).load_custom()
 
     return corpus, queries, qrels
-
 
 if __name__ == "__main__":
     parser = ArgumentParser()

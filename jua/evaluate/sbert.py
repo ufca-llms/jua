@@ -1,7 +1,9 @@
 from beir.retrieval import models
 from beir.retrieval.evaluation import EvaluateRetrieval
 from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
-import json
+import json, os, torch
+os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
+
 
 def evaluate_sbert(
     model_name: str, 
@@ -13,16 +15,21 @@ def evaluate_sbert(
     model_name_or_path = model_name
 
     dense_model = models.SentenceBERT(
-        model_name_or_path
+        model_name_or_path,
+        max_length=512,
+            model_kwargs={
+            "dtype": torch.bfloat16,
+        },
     )
 
     model = DRES(
         dense_model,
-        batch_size=batch_size
+        batch_size=batch_size,
     )
     retriever = EvaluateRetrieval(model, score_function="cos_sim")
 
     results = retriever.retrieve(corpus, queries)
+
 
     c = 0
     for q, r in results.items():
