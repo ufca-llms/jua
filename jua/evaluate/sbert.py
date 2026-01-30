@@ -2,7 +2,10 @@ from beir.retrieval import models
 from beir.retrieval.evaluation import EvaluateRetrieval
 from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
 import json, os, torch
+from beir.retrieval.search.dense import HNSWFaissSearch
 os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
+
+os.environ['FAISS_OPT_LEVEL'] = ''
 
 
 def evaluate_sbert(
@@ -16,8 +19,8 @@ def evaluate_sbert(
 
     dense_model = models.SentenceBERT(
         model_name_or_path,
-        max_length=512,
-            model_kwargs={
+        max_length=3072,
+        model_kwargs={
             "dtype": torch.bfloat16,
         },
     )
@@ -26,9 +29,14 @@ def evaluate_sbert(
         dense_model,
         batch_size=batch_size,
     )
+    # faiss_search = HNSWFaissSearch(model,
+#                                batch_size=128,
+#                                hnsw_store_n=512,
+#                                hnsw_ef_search=128,
+#                                hnsw_ef_construction=200)
     retriever = EvaluateRetrieval(model, score_function="cos_sim")
 
-    results = retriever.retrieve(corpus, queries)
+    results = retriever.encode_and_retrieve(corpus, queries, encode_output_path=f"./embeddings/sbert_{model_name.replace('/', '_')}/", overwrite=False)
 
 
     c = 0
