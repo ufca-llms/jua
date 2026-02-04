@@ -8,7 +8,7 @@ from jua.evaluate.openai_embeddings import evaluate_openai_embeddings
 from jua.evaluate.reranking_dense import evaluate_reranking_dense
 from jua.evaluate.reranking_monot5 import evaluate_reranking_monot5
 
-def main(model_name: str, model_type: str, dataset_path: str, batch_size: int):
+def main(model_name: str, model_type: str, dataset_path: str, batch_size: int, results_file: str = "results/anserini_bm25.json"):
     corpus, queries, qrels = load_dataset(dataset_path)
     
     if model_type == "bm25":
@@ -20,14 +20,14 @@ def main(model_name: str, model_type: str, dataset_path: str, batch_size: int):
     elif model_type == "openai":
         evaluate_openai_embeddings(model_name, corpus, queries, qrels,batch_size)
     elif model_type == "reranking_dense":
-        evaluate_reranking_dense(corpus, queries, qrels,model_name,batch_size)
+        evaluate_reranking_dense(qrels,model_name,results_file)
     elif model_type == "reranking_monot5":
         evaluate_reranking_monot5(corpus, queries, qrels, model_name, token_false="▁no", token_true="▁yes",batch_size=batch_size)
 
 def load_dataset(dataset_path: str):
     corpus_path = os.path.join(dataset_path, "corpus.jsonl")
     query_path = os.path.join(dataset_path, "queries.jsonl")
-    qrels_path = os.path.join(dataset_path,'qrels', "test_small.tsv")
+    qrels_path = os.path.join(dataset_path,'qrels', "test.tsv")
     print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
     corpus, queries, qrels = GenericDataLoader(
         corpus_file=corpus_path, 
@@ -42,7 +42,8 @@ if __name__ == "__main__":
     parser.add_argument("--model_type", type=str, help="Model type", default="bm25")
     parser.add_argument("--dataset_path", type=str, default="./jua-dataset",help="Dataset path")
     parser.add_argument("--batch_size", type=int, default=128, help="Batch size")
+    parser.add_argument("--results_file", type=str, default="results/anserini_bm25.json", help="Results file for reranking")
 
     args = parser.parse_args()
 
-    main(args.model_name, args.model_type, args.dataset_path, args.batch_size)
+    main(args.model_name, args.model_type, args.dataset_path, args.batch_size, args.results_file)

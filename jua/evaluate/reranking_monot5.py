@@ -63,22 +63,22 @@ def evaluate_reranking_monot5(
         token_true: str = "_yes",
         batch_size: int = 128
     ):
-    model = CustomBM25(index_path="./data/bm25_index", language="pt")
-    retriever = EvaluateRetrieval(model)
-    results = retriever.retrieve(corpus, queries)
+    # model = CustomBM25(index_path="./data/bm25_index", language="pt")
+    # retriever = EvaluateRetrieval(model)
+    # results = retriever.retrieve(corpus, queries)
 
-    ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, results, retriever.k_values)
-
-    print(f"NDCG: {ndcg}, MAP: {_map}, Recall: {recall}, Precision: {precision}")
+    results = json.load(open("results/anserini_bm25.json", "r"))
 
     cross_encoder_model = MonoT5(model_name, token_false=token_false, token_true=token_true, use_amp=False)
     reranker = Rerank(cross_encoder_model, batch_size=batch_size)
 
     rerank_results = reranker.rerank(corpus, queries, results, top_k=100)
 
-    ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, rerank_results, retriever.k_values)
+    ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, rerank_results, [1,3,5,10,100])
 
-    print(f"NDCG: {ndcg}, MAP: {_map}, Recall: {recall}, Precision: {precision}")
+    mrr = EvaluateRetrieval.evaluate_custom(qrels, rerank_results, [1,3,5,10,100], metric="mrr")
+
+    print(f"NDCG: {ndcg}, MAP: {_map}, Recall: {recall}, Precision: {precision}, MRR: {mrr}")
     
     # Remove slashes from model_name for file paths
     safe_model_name = model_name.replace("/", "_")
@@ -87,6 +87,7 @@ def evaluate_reranking_monot5(
         "NDCG": ndcg,
         "MAP": _map,
         "Recall": recall,
-        "Precision": precision
+        "Precision": precision,
+        "MRR": mrr
     }, open(f"results/{safe_model_name}_reranked_metrics.json", "w"))
     json.dump(rerank_results, open(f"results/{safe_model_name}_reranked_results.json", "w")) 
