@@ -42,8 +42,10 @@ def evaluate_reranking_dense(
 
     ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, rerank_results, [1, 3, 5, 10, 100],ignore_identical_ids=False)
     
-    print(f"NDCG: {ndcg}, MAP: {_map}, Recall: {recall}, Precision: {precision}, MRR: {mrr}")
+    
     mrr = EvaluateRetrieval.evaluate_custom(qrels, rerank_results, [1, 3, 5, 10, 100], metric="mrr")
+
+    print(f"NDCG: {ndcg}, MAP: {_map}, Recall: {recall}, Precision: {precision}, MRR: {mrr}")
 
     safe_model_name = model_name.replace("/", "_")
     json.dump({
