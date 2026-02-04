@@ -17,8 +17,10 @@ def evaluate_reranking_dense(
     rerank_results = {}
     
     encoded_path = f"./embeddings/openai_{model_name.replace('/', '_')}"
+    print(encoded_path)
     corpus_embeddings_0, corpus_ids_0 = pickle_load(f"{encoded_path}/corpus.0.pkl")
     queries_embeddins, query_ids = pickle_load(f"{encoded_path}/queries.pkl")
+    print(len(query_ids))
     
 
     for query_id in tqdm(results):

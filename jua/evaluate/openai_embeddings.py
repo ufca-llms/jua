@@ -1,5 +1,6 @@
 from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
 from jua.models.openai_embeddings import OpenAIEmbeddings
+from jua.models.gemini_embeddings import GeminiEmbeddings
 from beir.retrieval.evaluation import EvaluateRetrieval
 import json
 
@@ -11,7 +12,10 @@ def evaluate_openai_embeddings(
     qrels: dict[str, dict[str, str]],
     batch_size: int = 128,):
 
-    embeddings = OpenAIEmbeddings(model_name=model_name,initialize=True,batch_size=batch_size,max_tokens=8192)
+    if model_name.startswith("text-embedding"):
+        embeddings = OpenAIEmbeddings(model_name=model_name,initialize=True,batch_size=batch_size,max_tokens=8192)
+    else:
+        embeddings = GeminiEmbeddings(model_name=model_name, batch_size=batch_size)
 
     model = DRES(embeddings,batch_size=batch_size)
     

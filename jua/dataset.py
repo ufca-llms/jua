@@ -34,6 +34,7 @@ class Dataset:
         return self.__df
     
     def bm25_scoring(self):
+        corpus = self.__df[["title", "KEY", "EXCERTO"]].to_dict(orient="records")
         self.__scorer = BM25Scoring(self.__df["ENUNCIADO"].tolist())
         tqdm.pandas(desc="BM25 Scoring")
         self.__df["BM25_RANK"]= self.__df.progress_apply(lambda x: self.__scorer.score(x["ENUNCIADO"], self.__df.index.get_loc(x.name),len(self.__df)), axis=1)
@@ -59,17 +60,17 @@ class Dataset:
         # rename KEY column to _id and ENUNCIADO column to text
         queries = [{"_id": query["KEY"], "text": query["ENUNCIADO"]} for query in queries]
         # save queries to jsonlines file
-        with open(os.path.join(directory, "queries.jsonl"), "w", encoding="utf-8") as f:
-            for query in queries:
-                f.write(json.dumps(query, ensure_ascii=False) + "\n")
+        # with open(os.path.join(directory, "queries.jsonl"), "w", encoding="utf-8") as f:
+        #     for query in queries:
+        #         f.write(json.dumps(query, ensure_ascii=False) + "\n")
 
         corpus = self.__df[["title", "KEY", "EXCERTO"]].to_dict(orient="records")
         # rename KEY column to _id and EXCERTO column to text
         corpus = [{"_id": corpus["KEY"], "title": corpus["title"], "text": corpus["EXCERTO"]} for corpus in corpus]
         # save corpus to jsonlines file
-        with open(os.path.join(directory, "corpus.jsonl"), "w", encoding="utf-8") as f:
-            for doc in corpus:
-                f.write(json.dumps(doc, ensure_ascii=False) + "\n")
+        # with open(os.path.join(directory, "corpus.jsonl"), "w", encoding="utf-8") as f:
+        #     for doc in corpus:
+        #         f.write(json.dumps(doc, ensure_ascii=False) + "\n")
         
         train_qrels_df = pd.DataFrame({
             "query_id": self.__df_train["KEY"],
@@ -77,14 +78,14 @@ class Dataset:
             "relevance": 1
         })
         # save train qrels to json file
-        train_qrels_df.to_csv(os.path.join(directory,'qrels', "train.tsv"), index=False, sep="\t")
+        train_qrels_df.to_csv(os.path.join(directory,'qrels', "train_.tsv"), index=False, sep="\t")
         test_qrels_df = pd.DataFrame({
             "query-id": self.__df_test["KEY"],
             "corpus-id": self.__df_test["KEY"],
             "score": 1
         })
         # save test qrels to json file
-        test_qrels_df.to_csv(os.path.join(directory,'qrels', "test.tsv"), index=False, sep="\t")
+        test_qrels_df.to_csv(os.path.join(directory,'qrels', "test_.tsv"), index=False, sep="\t")
     
     
 

@@ -41,7 +41,7 @@ logging.basicConfig(
 data_path = "./jua-dataset"
 corpus_path = os.path.join(data_path, "corpus.jsonl")
 query_path = os.path.join(data_path, "queries.jsonl")
-qrels_path = os.path.join(data_path,'qrels', "test.tsv")
+qrels_path = os.path.join(data_path,'qrels', "test_hard.tsv")
 print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
 corpus, queries, qrels = GenericDataLoader(
     corpus_file=corpus_path, 
@@ -75,8 +75,9 @@ r = requests.get(docker_beir_pyserini + "/index/", params={"index_name": index_n
 retriever = EvaluateRetrieval()
 # create chunks of 100 queries for batch processing
 chunk_size = 100
+# results = json.load(open("results/anserini_bm25_partial.json", "r"))
 results = {}
-for i in tqdm(range(0, len(queries), chunk_size)):
+for i in tqdm(range(len(results), len(queries), chunk_size)):
     
     chunk_queries = dict(list(queries.items())[i:i + chunk_size])
 
@@ -87,6 +88,8 @@ for i in tqdm(range(0, len(queries), chunk_size)):
     #### Retrieve pyserini results (format of results is identical to qrels)
     results.update(json.loads(requests.post(docker_beir_pyserini + "/lexical/batch_search/", json=payload).text)["results"])
 
+    # json.dump(results, open("results/anserini_bm25_partial.json", "w"))
+
 #### Retrieve RM3 expanded pyserini results (format of results is identical to qrels)
 # results = json.loads(requests.post(docker_beir_pyserini + "/lexical/rm3/batch_search/", json=payload).text)["results"]
 
@@ -96,7 +99,7 @@ for query_id in results:
     if query_id in results[query_id]:
         results[query_id].pop(query_id, None)
 
-json.dump(results, open("results/anserini_bm25_questions.json", "w"))
+json.dump(results, open("results/anserini_bm25_hard.json", "w"))
 
 #### Evaluate your retrieval using NDCG@k, MAP@K ...
 logging.info(f"Retriever evaluation for k in: {retriever.k_values}")
