@@ -12,7 +12,7 @@ dotenv.load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
+llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0,timeout=30, client=client)
 
 class Question(BaseModel):
     question: str = Field(description="A query gerada com o padrão \"keyword1 keyword2 keyword3\"")
@@ -31,8 +31,11 @@ if __name__ == "__main__":
         corpus_file=f"{dataset_path}/corpus.jsonl", 
         query_file=f"{dataset_path}/queries.jsonl", 
         qrels_file=f"{dataset_path}/qrels/train.tsv").load_custom()
-
+    already_generated = open(f"{dataset_path}/queries_with_questions_new.jsonl", "r").read().splitlines()
+    already_generated = set([json.loads(line)["_id"] for line in already_generated])
     for qid, query in tqdm(queries.items()):
+        if qid in already_generated:
+            continue
         question = generate_question(query).question
         qry_dict = {"_id": qid, "text": question}
         # ensure ascii encoding and ignore errors        question_ascii = question.encode("ascii", errors="ignore").decode("ascii")

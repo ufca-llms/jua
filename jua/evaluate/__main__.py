@@ -10,6 +10,7 @@ from jua.evaluate.reranking_monot5 import evaluate_reranking_monot5
 
 def main(model_name: str, model_type: str, dataset_path: str, batch_size: int, results_file: str = "results/anserini_bm25.json"):
     corpus, queries, qrels = load_dataset(dataset_path)
+    dataset_name = os.path.basename(dataset_path)
     
     if model_type == "bm25":
         evaluate_bm25(corpus, queries, qrels)
@@ -18,7 +19,7 @@ def main(model_name: str, model_type: str, dataset_path: str, batch_size: int, r
     elif model_type == "sbert":
         evaluate_sbert(model_name, corpus, queries, qrels,batch_size)
     elif model_type == "openai":
-        evaluate_openai_embeddings(model_name, corpus, queries, qrels,batch_size)
+        evaluate_openai_embeddings(model_name,dataset_name, corpus, queries, qrels,batch_size)
     elif model_type == "reranking_dense":
         evaluate_reranking_dense(qrels,model_name,results_file)
     elif model_type == "reranking_monot5":

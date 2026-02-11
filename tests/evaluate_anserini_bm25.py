@@ -38,10 +38,10 @@ logging.basicConfig(
 #### /print debug information to stdout
 
 
-data_path = "./data/juris-tcu/beir"
+data_path = "./jua-dataset"
 corpus_path = os.path.join(data_path, "corpus.jsonl")
-query_path = os.path.join(data_path, "queries.jsonl")
-qrels_path = os.path.join(data_path,'qrels', "test.tsv")
+query_path = os.path.join(data_path, "queries_with_questions_new.jsonl")
+qrels_path = os.path.join(data_path,'qrels', "train.tsv")
 print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
 corpus, queries, qrels = GenericDataLoader(
     corpus_file=corpus_path, 
@@ -67,7 +67,7 @@ with open(os.path.join(data_path, "pyserini.jsonl"), "rb") as fIn:
     r = requests.post(docker_beir_pyserini + "/upload/", files={"file": fIn}, verify=False)
 
 #### Index documents to Pyserini #####
-index_name = "beir/juris-tcu"  # beir/scifact
+index_name = "beir/jua-dataset"  # beir/scifact
 
 r = requests.get(docker_beir_pyserini + "/index/", params={"index_name": index_name})
 
@@ -75,8 +75,8 @@ r = requests.get(docker_beir_pyserini + "/index/", params={"index_name": index_n
 retriever = EvaluateRetrieval()
 # create chunks of 100 queries for batch processing
 chunk_size = 100
-# results = json.load(open("results/anserini_bm25_partial.json", "r"))
-results = {}
+results = json.load(open("results/anserini_bm25_jua_generated_questions.json", "r"))
+# results = {}
 for i in tqdm(range(len(results), len(queries), chunk_size)):
     
     chunk_queries = dict(list(queries.items())[i:i + chunk_size])
@@ -88,7 +88,7 @@ for i in tqdm(range(len(results), len(queries), chunk_size)):
     #### Retrieve pyserini results (format of results is identical to qrels)
     results.update(json.loads(requests.post(docker_beir_pyserini + "/lexical/batch_search/", json=payload).text)["results"])
 
-    # json.dump(results, open("results/anserini_bm25_partial.json", "w"))
+    json.dump(results, open("results/anserini_bm25_jua_generated_questions.json", "w"))
 
 #### Retrieve RM3 expanded pyserini results (format of results is identical to qrels)
 # results = json.loads(requests.post(docker_beir_pyserini + "/lexical/rm3/batch_search/", json=payload).text)["results"]
@@ -99,7 +99,7 @@ for query_id in results:
     if query_id in results[query_id]:
         results[query_id].pop(query_id, None)
 
-json.dump(results, open("results/anserini_bm25_juris-tcu.json", "w"))
+json.dump(results, open("results/anserini_bm25_jua_generated_questions.json", "w"))
 
 #### Evaluate your retrieval using NDCG@k, MAP@K ...
 logging.info(f"Retriever evaluation for k in: {retriever.k_values}")

@@ -12,12 +12,12 @@ def evaluate_reranking_dense(
         model_name: str,
         results_path: str = "results/anserini_bm25.json",
     ):
-    results_path = "results/anserini_bm25_juris-tcu.json"
+    results_path = "results/anserini_bm25_normas-tcu.json"
     results = json.load(open(results_path, "r"))
     rerank_results = {}
     
     # encoded_path = f"./embeddings/sbert_{model_name.replace('/', '_')}"
-    encoded_path = "embeddings/openai_juris-tcu_text-embedding-3-small"
+    encoded_path = "embeddings/normas-tcu/openai_text-embedding-3-small"
     print(encoded_path)
     corpus_embeddings_0, corpus_ids_0 = pickle_load(f"{encoded_path}/corpus.0.pkl")
     queries_embeddins, query_ids = pickle_load(f"{encoded_path}/queries.pkl")
@@ -58,6 +58,6 @@ def evaluate_reranking_dense(
         "Precision": precision,
         "MRR": mrr  
     }, open(f"results/{safe_model_name}_reranked_metrics.json", "w"))
-    json.dump(rerank_results, open(f"results/{safe_model_name}_reranked_juris_tcu.json", "w")) 
+    json.dump(rerank_results, open(f"results/{safe_model_name}_reranked_normas-tcu.json", "w")) 
 
     

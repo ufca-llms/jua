@@ -3,6 +3,7 @@ import torch
 from sentence_transformers import SentenceTransformer
 from argparse import ArgumentParser
 
+
 def evaluate(model_name: str,batch_size: int = 128):
     # Get the full English benchmark
     benchmark = mteb.get_benchmark("MTEB(eng, v2)")
@@ -13,12 +14,15 @@ def evaluate(model_name: str,batch_size: int = 128):
 
     # Run evaluation on only retrieval tasks
     model = SentenceTransformer(model_name, model_kwargs = {
-        "dtype": torch.bfloat16 if torch.cuda.is_available() else torch.float32
+        "dtype": torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+        "attn_implementation": "flash_attention_2"
     })
 
     model.max_seq_length = 3072
 
-    results = mteb.evaluate(model, tasks=retrieval_tasks, encode_kwargs={"batch_size": batch_size})
+    cache = mteb.ResultCache(cache_path="~/.cache/mteb")
+
+    results = mteb.evaluate(model, tasks=retrieval_tasks, encode_kwargs={"batch_size": batch_size}, cache=cache)
     print(results)
 
 

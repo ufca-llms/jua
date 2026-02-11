@@ -10,7 +10,7 @@ class TrainDataset:
     """
     Class to create training dataset based on results and statistical cutoff
     """
-    def __init__(self, results_path, dataset_path="./jua-dataset", output_path="./data/train_datase.jsonl", alpha=0.01, max_samples=100):
+    def __init__(self, results_path, dataset_path="./jua-dataset", output_path="./data/train_dataset_new.jsonl", alpha=0.01, max_samples=100):
         """Initialize the TrainDataset class.
         Args:
             results_path (str): Path to the results file.
@@ -56,7 +56,7 @@ class TrainDataset:
             tuple: corpus, queries, and qrels.
         """
         corpus_path = os.path.join(self.dataset_path, "corpus.jsonl")
-        query_path = os.path.join(self.dataset_path, "queries.jsonl")
+        query_path = os.path.join(self.dataset_path, "queries_with_questions_new.jsonl")
         qrels_path = os.path.join(self.dataset_path,'qrels', "train.tsv")
         print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
         corpus, queries, qrels = GenericDataLoader(

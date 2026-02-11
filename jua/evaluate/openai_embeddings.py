@@ -7,6 +7,7 @@ import json
 
 def evaluate_openai_embeddings(
     model_name: str, 
+    dataset_name: str,
     corpus: dict[str, dict[str, str]], 
     queries: dict[str, str], 
     qrels: dict[str, dict[str, str]],
@@ -21,9 +22,9 @@ def evaluate_openai_embeddings(
     
     retriever = EvaluateRetrieval(model, score_function="cos_sim")
 
-    results = retriever.encode_and_retrieve(corpus, queries, encode_output_path=f"./embeddings/openai_juris-tcu_{model_name.replace('/', '_')}/", overwrite=False)
+    results = retriever.encode_and_retrieve(corpus, queries, encode_output_path=f"./embeddings/{dataset_name}/openai_{model_name.replace('/', '_')}/", overwrite=False)
     
-    json.dump(results, open(f"results/openai_juris-tcu_{model_name.replace('/', '_')}.json", "w"))
+    json.dump(results, open(f"results/openai_{dataset_name}_{model_name.replace('/', '_')}.json", "w"))
 
     ndcg, _map, recall, precision = retriever.evaluate(qrels, results, retriever.k_values,ignore_identical_ids=False)
     
@@ -36,4 +37,4 @@ def evaluate_openai_embeddings(
         "Recall": recall,
         "Precision": precision,
         "MRR": mrr  
-    }, open(f"results/openai_juris-tcu_{model_name.replace('/', '_')}_metrics.json", "w"))
+    }, open(f"results/openai_{dataset_name}_{model_name.replace('/', '_')}_metrics.json", "w"))
