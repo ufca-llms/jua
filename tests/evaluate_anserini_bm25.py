@@ -38,10 +38,10 @@ logging.basicConfig(
 #### /print debug information to stdout
 
 
-data_path = "./jua-dataset"
+data_path = "./data/juris-tcu/beir"
 corpus_path = os.path.join(data_path, "corpus.jsonl")
 query_path = os.path.join(data_path, "queries.jsonl")
-qrels_path = os.path.join(data_path,'qrels', "test_hard.tsv")
+qrels_path = os.path.join(data_path,'qrels', "test.tsv")
 print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
 corpus, queries, qrels = GenericDataLoader(
     corpus_file=corpus_path, 
@@ -67,7 +67,7 @@ with open(os.path.join(data_path, "pyserini.jsonl"), "rb") as fIn:
     r = requests.post(docker_beir_pyserini + "/upload/", files={"file": fIn}, verify=False)
 
 #### Index documents to Pyserini #####
-index_name = "beir/jua-dataset"  # beir/scifact
+index_name = "beir/juris-tcu"  # beir/scifact
 
 r = requests.get(docker_beir_pyserini + "/index/", params={"index_name": index_name})
 
@@ -99,7 +99,7 @@ for query_id in results:
     if query_id in results[query_id]:
         results[query_id].pop(query_id, None)
 
-json.dump(results, open("results/anserini_bm25_hard.json", "w"))
+json.dump(results, open("results/anserini_bm25_juris-tcu.json", "w"))
 
 #### Evaluate your retrieval using NDCG@k, MAP@K ...
 logging.info(f"Retriever evaluation for k in: {retriever.k_values}")

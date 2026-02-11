@@ -5,3 +5,6 @@ openai
 dotenv
 tiktoken
 sentencepiece
+google-genai
+faiss-cpu
+mteb

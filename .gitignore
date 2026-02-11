@@ -211,3 +211,7 @@ results/
 embeddings/
 myenv/
 jua-dataset.zip
+output/
+py312_env/
+wandb/
+dataset.zip
