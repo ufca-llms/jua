@@ -17,7 +17,7 @@ def main(model_name: str, model_type: str, dataset_path: str, batch_size: int, r
     elif model_type == "dense_hf":
         evaluate_dense_hf(model_name, corpus, queries, qrels)
     elif model_type == "sbert":
-        evaluate_sbert(model_name, corpus, queries, qrels,batch_size)
+        evaluate_sbert(model_name,dataset_name, corpus, queries, qrels,batch_size)
     elif model_type == "openai":
         evaluate_openai_embeddings(model_name,dataset_name, corpus, queries, qrels,batch_size)
     elif model_type == "reranking_dense":

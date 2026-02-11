@@ -7,9 +7,9 @@ os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
 
 os.environ['FAISS_OPT_LEVEL'] = ''
 
-
 def evaluate_sbert(
     model_name: str, 
+    dataset_name: str,
     corpus: dict[str, dict[str, str]], 
     queries: dict[str, str], 
     qrels: dict[str, dict[str, str]],
@@ -22,6 +22,7 @@ def evaluate_sbert(
         max_length=3072,
         model_kwargs={
             "dtype": torch.bfloat16,
+            "attn_implementation": "flash_attention_2"
         },
     )
 
@@ -36,7 +37,7 @@ def evaluate_sbert(
 #                                hnsw_ef_construction=200)
     retriever = EvaluateRetrieval(model, score_function="cos_sim")
 
-    results = retriever.encode_and_retrieve(corpus, queries, encode_output_path=f"./embeddings/sbert_{model_name.replace('/', '_')}/", overwrite=False)
+    results = retriever.encode_and_retrieve(corpus, queries, encode_output_path=f"./embeddings/{dataset_name}/sbert_{model_name.replace('/', '_')}/", overwrite=False)
 
 
     c = 0
@@ -64,4 +65,4 @@ def evaluate_sbert(
         "recall": recall,
         "precision": precision,
         "mrr": mrr
-    }, open(f"results/sbert_{safe_model_name}_metrics.json", "w"))
+    }, open(f"results/{dataset_name}_sbert_{safe_model_name}_metrics.json", "w"))
