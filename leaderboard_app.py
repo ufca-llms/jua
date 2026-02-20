@@ -215,7 +215,6 @@ def main():
             "com foco em jurisprudência e normativos. "
             "Ordenação padrão por `overall` (média de NDCG@10 entre benchmarks selecionados)."
         )
-        gr.Markdown(f"Results directory: `{RESULTS_DIR}`")
 
         with gr.Row():
             benchmark = gr.CheckboxGroup(choices=_init_choices(), value=_init_choices(), label="Benchmarks")
