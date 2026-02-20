@@ -27,5 +27,91 @@
       "modalities": ["text"],
       "languages": ["multilingual"]
     }
+  },
+  {
+    "id": "openai-text-embedding-3-small",
+    "adapter": "openai",
+    "model_name": "text-embedding-3-small",
+    "batch_size": 128,
+    "meta": {
+      "name": "text-embedding-3-small",
+      "provider": "OpenAI",
+      "description": "OpenAI embeddings",
+      "url": "https://platform.openai.com/docs/guides/embeddings",
+      "model_type": ["dense-retrieval"]
+    }
+  },
+  {
+    "id": "qwen3-embedding-8b",
+    "adapter": "sbert",
+    "model_name": "Qwen/Qwen3-Embedding-8B",
+    "batch_size": 128,
+    "meta": {
+      "name": "Qwen/Qwen3-Embedding-8B",
+      "provider": "Qwen",
+      "url": "https://huggingface.co/Qwen/Qwen3-Embedding-8B",
+      "description": "Qwen3 Embedding 8B",
+      "model_type": ["dense-retrieval"],
+      "modalities": ["text"],
+      "languages": ["multilingual"]
+    }
+  },
+  {
+    "id": "qwen3-embedding-4b",
+    "adapter": "sbert",
+    "model_name": "Qwen/Qwen3-Embedding-4B",
+    "batch_size": 128,
+    "meta": {
+      "name": "Qwen/Qwen3-Embedding-4B",
+      "provider": "Qwen",
+      "url": "https://huggingface.co/Qwen/Qwen3-Embedding-4B",
+      "description": "Qwen3 Embedding 4B",
+      "model_type": ["dense-retrieval"],
+      "modalities": ["text"],
+      "languages": ["multilingual"]
+    }
+  },
+  {
+    "id": "qwen3-embedding-0.6b-jua-v1",
+    "adapter": "sbert",
+    "model_name": "ufca-llms/Qwen3-Embedding-0.6B-jua-v1",
+    "batch_size": 128,
+    "meta": {
+      "name": "ufca-llms/Qwen3-Embedding-0.6B-jua-v1",
+      "provider": "ufca-llms",
+      "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-0.6B-jua-v1",
+      "description": "Qwen3 Embedding 0.6B fine-tuned on JUÁ (v1)",
+      "model_type": ["dense-retrieval"],
+      "modalities": ["text"],
+      "languages": ["pt"]
+    }
+  },
+  {
+    "id": "jua-v2",
+    "adapter": "sbert",
+    "model_name": "ufca-llms/Qwen3-Embedding-0.6B-jua-v2",
+    "batch_size": 128,
+    "meta": {
+      "name": "ufca-llms/Qwen3-Embedding-0.6B-jua-v2",
+      "provider": "ufca-llms",
+      "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-0.6B-jua-v2",
+      "description": "Qwen3 Embedding 0.6B fine-tuned on JUÁ (v2)",
+      "model_type": ["dense-retrieval"],
+      "modalities": ["text"],
+      "languages": ["pt"]
+    }
+  },
+  {
+    "id": "rerank-openai-3-small",
+    "adapter": "rerank/dense",
+    "model_name": "text-embedding-3-small",
+    "meta": {
+      "name": "text-embedding-3-small (rerank)",
+      "provider": "OpenAI",
+      "url": "https://platform.openai.com/docs/guides/embeddings",
+      "description": "Dense reranking over BM25 results using precomputed OpenAI embeddings",
+      "model_type": ["reranker"],
+      "modalities": ["text"]
+    }
   }
 ]

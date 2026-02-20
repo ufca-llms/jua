@@ -16,6 +16,8 @@ from jua.models.openai_embeddings import OpenAIEmbeddings
 from jua.models.gemini_embeddings import GeminiEmbeddings
 from jua.evaluate.reranking_dense import evaluate_reranking_dense
 from jua.evaluate.reranking_monot5 import evaluate_reranking_monot5
+import glob
+import re
 
 
 def _ensure_dir(path: str) -> None:
@@ -243,13 +245,16 @@ class RerankDenseModel(BaseModel):
         self.embeddings_dir = embeddings_dir
 
     def evaluate(self, corpus, queries, qrels, dataset_name: str, **kwargs) -> ModelResult:
+        results_file = kwargs.get("results_file") or self.results_file or _auto_results_file(dataset_name)
+        embeddings_dir = kwargs.get("embeddings_dir") or self.embeddings_dir or _auto_embeddings_dir(self.model_name)
+
         # Reuse existing pipeline (writes results to file)
         evaluate_reranking_dense(
             qrels,
             self.model_name,
-            results_path=self.results_file,
+            results_path=results_file,
             dataset_name=dataset_name,
-            embeddings_dir=self.embeddings_dir,
+            embeddings_dir=embeddings_dir,
         )
         metrics_path = f"results/{self.model_name.replace('/', '_')}_reranked_metrics.json"
         metrics = json.load(open(metrics_path, "r")) if os.path.exists(metrics_path) else {}
@@ -288,3 +293,54 @@ class RerankMonoT5Model(BaseModel):
         metrics_path = f"results/{self.model_name.replace('/', '_')}_reranked_metrics.json"
         metrics = json.load(open(metrics_path, "r")) if os.path.exists(metrics_path) else {}
         return ModelResult(metrics=metrics, results=None)
+
+
+def _slugify_benchmark(name: str) -> str:
+    if name.endswith("Retrieval"):
+        name = name[:-9]
+    # CamelCase to kebab-case
+    name = re.sub(r"([a-z0-9])([A-Z])", r"\\1-\\2", name)
+    name = name.replace("_", "-").lower()
+    return name
+
+
+def _auto_results_file(dataset_name: str) -> str:
+    slug = _slugify_benchmark(dataset_name)
+    candidates = [
+        f"results/anserini_bm25_{slug}.json",
+        f"results/anserini_bm25_{slug.replace('-', '_')}.json",
+    ]
+    if slug == "jua":
+        candidates.insert(0, "results/anserini_bm25_hard.json")
+
+    for path in candidates:
+        if os.path.exists(path):
+            return path
+
+    matches = [p for p in glob.glob("results/anserini_bm25_*.json") if slug in os.path.basename(p)]
+    if len(matches) == 1:
+        return matches[0]
+
+    raise FileNotFoundError(
+        "Could not infer BM25 results file. Provide --results_file or set it in registry.json."
+    )
+
+
+def _auto_embeddings_dir(model_name: str) -> str:
+    safe_model = model_name.replace("/", "_")
+    candidates = [
+        f"embeddings/openai_{safe_model}",
+        f"embeddings/openai_{safe_model.replace('text-embedding', 'text-embedding')}",
+    ]
+
+    for path in candidates:
+        if os.path.isdir(path):
+            return path
+
+    matches = glob.glob(f"embeddings/**/openai_{safe_model}", recursive=True)
+    if len(matches) == 1:
+        return matches[0]
+
+    raise FileNotFoundError(
+        "Could not infer embeddings directory. Provide --embeddings_dir or set it in registry.json."
+    )

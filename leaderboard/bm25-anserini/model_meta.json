@@ -1,0 +1,7 @@
+{
+  "model": "bm25/anserini",
+  "kind": "retrieval",
+  "meta": {
+    "provider": "anserini"
+  }
+}

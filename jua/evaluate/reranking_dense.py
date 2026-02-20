@@ -95,9 +95,14 @@ def evaluate_reranking_dense(
     if embedding_doc_ids_sample:
         print(f"Sample doc IDs from embeddings: {embedding_doc_ids_sample}")
 
-    ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, rerank_results, [1, 3, 5, 10, 100], ignore_identical_ids=False)
+    # Filter to qrels keys to avoid empty evaluation or KeyErrors
+    filtered_results = {qid: res for qid, res in rerank_results.items() if qid in qrels}
+    if not filtered_results:
+        raise ValueError("No reranked results match qrels. Check embeddings/query IDs and dataset alignment.")
 
-    mrr = EvaluateRetrieval.evaluate_custom(qrels, rerank_results, [1, 3, 5, 10, 100], metric="mrr")
+    ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, filtered_results, [1, 3, 5, 10, 100], ignore_identical_ids=False)
+
+    mrr = EvaluateRetrieval.evaluate_custom(qrels, filtered_results, [1, 3, 5, 10, 100], metric="mrr")
 
     print(f"NDCG: {ndcg}, MAP: {_map}, Recall: {recall}, Precision: {precision}, MRR: {mrr}")
 
@@ -109,4 +114,4 @@ def evaluate_reranking_dense(
         "Precision": precision,
         "MRR": mrr
     }, open(f"results/{safe_model_name}_reranked_metrics.json", "w"))
-    json.dump(rerank_results, open(f"results/{safe_model_name}_reranked_jua.json", "w"))
+    json.dump(filtered_results, open(f"results/{safe_model_name}_reranked_jua.json", "w")) 

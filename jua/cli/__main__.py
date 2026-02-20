@@ -21,7 +21,8 @@ def main():
     run_parser.add_argument("--benchmark", default="jua", help="Benchmark id (registry) or legacy name")
     run_parser.add_argument("--dataset_registry", default=None, help="Path to dataset registry JSON")
     run_parser.add_argument("--all_datasets", action="store_true", help="Run on all registered datasets")
-    run_parser.add_argument("--output_dir", default="results/leaderboard", help="Leaderboard output dir")
+    run_parser.add_argument("--output_dir", default="leaderboard", help="Leaderboard output dir")
+    run_parser.add_argument("--results_output_dir", default="results/leaderboard", help="Results output dir (_results.json)")
     run_parser.add_argument("--model_meta_json", default=None, help="Path to a JSON file with model metadata")
     run_parser.add_argument("--overall_metric", default=None, help="Overall metric (e.g. ndcg@10, mrr@10, map@10)")
 
@@ -72,7 +73,14 @@ def main():
     else:
         tasks = jua.get_tasks(args.benchmark, dataset_registry=args.dataset_registry)
 
-    jua.run(model, tasks, output_dir=args.output_dir, overall_metric=args.overall_metric)
+    jua.run(
+        model,
+        tasks,
+        output_dir=args.output_dir,
+        results_output_dir=args.results_output_dir,
+        overall_metric=args.overall_metric,
+        embeddings_dir=args.embeddings_dir,
+    )
 
 
 if __name__ == "__main__":

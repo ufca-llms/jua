@@ -5,6 +5,8 @@ from .run import run
 
 def get_tasks(benchmark: str, **kwargs):
     if benchmark.lower() == "jua":
+        # drop registry arg for legacy jua helper
+        kwargs.pop("dataset_registry", None)
         return get_jua_tasks(**kwargs)
     return get_dataset_tasks(benchmark, registry_path=kwargs.get("dataset_registry"))
 

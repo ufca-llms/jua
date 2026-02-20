@@ -36,8 +36,16 @@ def _overall_score(metrics: dict[str, Any], overall_metric: str | None = None) -
     return None
 
 
-def run(model, tasks: list[Task], output_dir: str = "results/leaderboard", overall_metric: str | None = None, **kwargs):
+def run(
+    model,
+    tasks: list[Task],
+    output_dir: str = "leaderboard",
+    results_output_dir: str = "results/leaderboard",
+    overall_metric: str | None = None,
+    **kwargs,
+):
     os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(results_output_dir, exist_ok=True)
     results = []
 
     for task in tasks:
@@ -85,7 +93,9 @@ def run(model, tasks: list[Task], output_dir: str = "results/leaderboard", overa
             json.dump(payload, f_out, ensure_ascii=False, indent=2)
 
         if model_result.results is not None:
-            results_file = os.path.join(model_dir, f"{_safe_name(task.name)}_results.json")
+            results_model_dir = os.path.join(results_output_dir, _safe_name(model.name))
+            os.makedirs(results_model_dir, exist_ok=True)
+            results_file = os.path.join(results_model_dir, f"{_safe_name(task.name)}_results.json")
             with open(results_file, "w", encoding="utf-8") as results_out:
                 json.dump(model_result.results, results_out, ensure_ascii=False)
 

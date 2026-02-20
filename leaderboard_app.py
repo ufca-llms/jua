@@ -3,7 +3,8 @@ from __future__ import annotations
 import base64
 import json
 import os
-from typing import Any, Dict, List, Tuple
+import html
+from typing import Any, Dict, List
 
 import gradio as gr
 
@@ -56,6 +57,7 @@ def _collect_results(results_dir: str) -> List[Dict[str, Any]]:
         meta_path = os.path.join(model_path, "model_meta.json")
         meta = _load_json(meta_path) if os.path.exists(meta_path) else {}
         model_name = meta.get("meta", {}).get("name") or meta.get("model") or model_dir
+        model_url = meta.get("meta", {}).get("url")
 
         for fname in _safe_listdir(model_path):
             if not fname.endswith(".json"):
@@ -72,6 +74,7 @@ def _collect_results(results_dir: str) -> List[Dict[str, Any]]:
                 {
                     "model_id": model_dir,
                     "model": model_name,
+                    "model_url": model_url,
                     "benchmark": task_name,
                     "ndcg@10": ndcg10,
                     "generated_at": payload.get("generated_at"),
@@ -84,16 +87,25 @@ def _available_benchmarks(rows: List[Dict[str, Any]]) -> List[str]:
     return sorted({r["benchmark"] for r in rows})
 
 
+def _display_benchmark(name: str) -> str:
+    if name.endswith("Retrieval"):
+        name = name[:-9]
+    name = name.replace("RFCorpus", "RF Corpus")
+    name = name.replace("TCU", "TCU")
+    return name
+
+
 def _pivot(rows: List[Dict[str, Any]], benchmarks: List[str]) -> List[Dict[str, Any]]:
     by_model: Dict[str, Dict[str, Any]] = {}
     for r in rows:
         model_id = r["model_id"]
         model_name = r["model"]
-        by_model.setdefault(model_id, {"model": model_name})
+        model_url = r.get("model_url")
+        by_model.setdefault(model_id, {"model": model_name, "model_url": model_url})
         by_model[model_id][r["benchmark"]] = r.get("ndcg@10")
 
     pivot = []
-    for model_id, data in by_model.items():
+    for _model_id, data in by_model.items():
         values = [data.get(b) for b in benchmarks]
         valid = [v for v in values if isinstance(v, (int, float))]
         overall = sum(valid) / len(valid) if valid else None
@@ -102,7 +114,15 @@ def _pivot(rows: List[Dict[str, Any]], benchmarks: List[str]) -> List[Dict[str, 
     return pivot
 
 
-def build_table(selected_benchmarks: List[str], order_metric: str) -> Tuple[List[str], List[List[Any]]]:
+def _fmt(value: Any) -> str:
+    if value is None:
+        return "-"
+    if isinstance(value, float):
+        return f"{value:.4f}"
+    return str(value)
+
+
+def build_table_html(selected_benchmarks: List[str], order_metric: str) -> str:
     rows = _collect_results(RESULTS_DIR)
     all_benchmarks = _available_benchmarks(rows)
 
@@ -112,15 +132,40 @@ def build_table(selected_benchmarks: List[str], order_metric: str) -> Tuple[List
     metric_key = order_metric
     pivot.sort(key=lambda r: (r.get(metric_key) is None, -(r.get(metric_key) or 0.0)))
 
-    columns = ["rank", "model"] + benchmarks + ["overall"]
-    data = []
-    for idx, r in enumerate(pivot, start=1):
-        row = [idx, r.get("model")]
-        row.extend([r.get(b) for b in benchmarks])
-        row.append(r.get("overall"))
-        data.append(row)
+    headers = ["rank", "model"] + [_display_benchmark(b) for b in benchmarks] + ["overall"]
 
-    return columns, data
+    html_rows = []
+    for idx, r in enumerate(pivot, start=1):
+        model_name = html.escape(r.get("model", ""))
+        model_url = r.get("model_url")
+        if model_url:
+            model_cell = f'<a href="{html.escape(model_url)}" target="_blank">{model_name}</a>'
+        else:
+            model_cell = model_name
+
+        cells = [str(idx), model_cell]
+        for b in benchmarks:
+            cells.append(_fmt(r.get(b)))
+        cells.append(_fmt(r.get("overall")))
+
+        html_cells = "".join([f"<td>{c}</td>" for c in cells])
+        html_rows.append(f"<tr>{html_cells}</tr>")
+
+    header_html = "".join([f"<th>{html.escape(h)}</th>" for h in headers])
+    body_html = "".join(html_rows)
+
+    return f"""
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>{header_html}</tr>
+        </thead>
+        <tbody>
+          {body_html}
+        </tbody>
+      </table>
+    </div>
+    """
 
 
 def _init_choices() -> List[str]:
@@ -147,16 +192,14 @@ def main():
             )
             refresh = gr.Button("Refresh")
 
-        init_cols, init_data = build_table(_init_choices(), "overall")
-        table = gr.Dataframe(headers=init_cols, value=init_data, label="Ranking", interactive=False)
+        table_html = gr.HTML(build_table_html(_init_choices(), "overall"))
 
         def _refresh(bmks, metric):
-            cols, data = build_table(bmks, metric)
-            return gr.Dataframe(headers=cols, value=data, interactive=False)
+            return build_table_html(bmks, metric)
 
-        refresh.click(_refresh, inputs=[benchmark, order_metric], outputs=[table])
-        benchmark.change(_refresh, inputs=[benchmark, order_metric], outputs=[table])
-        order_metric.change(_refresh, inputs=[benchmark, order_metric], outputs=[table])
+        refresh.click(_refresh, inputs=[benchmark, order_metric], outputs=[table_html])
+        benchmark.change(_refresh, inputs=[benchmark, order_metric], outputs=[table_html])
+        order_metric.change(_refresh, inputs=[benchmark, order_metric], outputs=[table_html])
 
         gr.Markdown("---")
 
