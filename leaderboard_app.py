@@ -58,6 +58,15 @@ def _collect_results(results_dir: str) -> List[Dict[str, Any]]:
         meta = _load_json(meta_path) if os.path.exists(meta_path) else {}
         model_name = meta.get("meta", {}).get("name") or meta.get("model") or model_dir
         model_url = meta.get("meta", {}).get("url")
+        model_kind = meta.get("kind")
+        if not model_kind:
+            meta_type = meta.get("meta", {}).get("model_type")
+            if isinstance(meta_type, list):
+                model_kind = "reranker" if "reranker" in meta_type else "retrieval"
+            elif isinstance(meta_type, str):
+                model_kind = meta_type
+        if model_kind == "rerank":
+            model_kind = "reranker"
 
         for fname in _safe_listdir(model_path):
             if not fname.endswith(".json"):
@@ -78,6 +87,7 @@ def _collect_results(results_dir: str) -> List[Dict[str, Any]]:
                     "benchmark": task_name,
                     "ndcg@10": ndcg10,
                     "generated_at": payload.get("generated_at"),
+                    "model_kind": model_kind,
                 }
             )
     return rows
@@ -91,7 +101,6 @@ def _display_benchmark(name: str) -> str:
     if name.endswith("Retrieval"):
         name = name[:-9]
     name = name.replace("RFCorpus", "RF Corpus")
-    name = name.replace("TCU", "TCU")
     return name
 
 
@@ -122,8 +131,35 @@ def _fmt(value: Any) -> str:
     return str(value)
 
 
-def build_table_html(selected_benchmarks: List[str], order_metric: str) -> str:
+def _column_ranges(rows: List[Dict[str, Any]], benchmarks: List[str]) -> Dict[str, tuple[float, float]]:
+    ranges: Dict[str, tuple[float, float]] = {}
+    keys = benchmarks + ["overall"]
+    for k in keys:
+        vals = [r.get(k) for r in rows if isinstance(r.get(k), (int, float))]
+        if not vals:
+            continue
+        ranges[k] = (min(vals), max(vals))
+    return ranges
+
+
+def _heat_color(value: float, vmin: float, vmax: float) -> str:
+    if vmax <= vmin:
+        t = 1.0
+    else:
+        t = (value - vmin) / (vmax - vmin)
+    # purple to green scale (like mteb-ish)
+    r1, g1, b1 = (88, 54, 158)
+    r2, g2, b2 = (46, 163, 102)
+    r = int(r1 + (r2 - r1) * t)
+    g = int(g1 + (g2 - g1) * t)
+    b = int(b1 + (b2 - b1) * t)
+    return f"rgb({r},{g},{b})"
+
+
+def build_table_html(selected_benchmarks: List[str], order_metric: str, kind_filter: str) -> str:
     rows = _collect_results(RESULTS_DIR)
+    if kind_filter != "all":
+        rows = [r for r in rows if r.get("model_kind") == kind_filter]
     all_benchmarks = _available_benchmarks(rows)
 
     benchmarks = selected_benchmarks if selected_benchmarks else all_benchmarks
@@ -131,6 +167,8 @@ def build_table_html(selected_benchmarks: List[str], order_metric: str) -> str:
 
     metric_key = order_metric
     pivot.sort(key=lambda r: (r.get(metric_key) is None, -(r.get(metric_key) or 0.0)))
+
+    ranges = _column_ranges(pivot, benchmarks)
 
     headers = ["rank", "model"] + [_display_benchmark(b) for b in benchmarks] + ["overall"]
 
@@ -145,8 +183,20 @@ def build_table_html(selected_benchmarks: List[str], order_metric: str) -> str:
 
         cells = [str(idx), model_cell]
         for b in benchmarks:
-            cells.append(_fmt(r.get(b)))
-        cells.append(_fmt(r.get("overall")))
+            val = r.get(b)
+            if isinstance(val, (int, float)) and b in ranges:
+                vmin, vmax = ranges[b]
+                bg = _heat_color(float(val), vmin, vmax)
+                cells.append(f'<span class="num-cell" style="background:{bg};">{_fmt(val)}</span>')
+            else:
+                cells.append(_fmt(val))
+        overall_val = r.get("overall")
+        if isinstance(overall_val, (int, float)) and "overall" in ranges:
+            vmin, vmax = ranges["overall"]
+            bg = _heat_color(float(overall_val), vmin, vmax)
+            cells.append(f'<span class="num-cell" style="background:{bg};">{_fmt(overall_val)}</span>')
+        else:
+            cells.append(_fmt(overall_val))
 
         html_cells = "".join([f"<td>{c}</td>" for c in cells])
         html_rows.append(f"<tr>{html_cells}</tr>")
@@ -155,8 +205,78 @@ def build_table_html(selected_benchmarks: List[str], order_metric: str) -> str:
     body_html = "".join(html_rows)
 
     return f"""
-    <div style="overflow-x:auto;">
-      <table style="width:100%; border-collapse:collapse;">
+    <style>
+      .lb-wrap {{
+        max-height: 520px;
+        overflow: auto;
+        border: 1px solid #2a2f3a;
+        border-radius: 14px;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.02) inset;
+      }}
+      .lb-table {{
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+      }}
+      .lb-table th {{
+        position: sticky;
+        top: 0;
+        background: linear-gradient(180deg, #171a21 0%, #12151b 100%);
+        color: #e9edf3;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        border-bottom: 1px solid #2a2f3a;
+        padding: 10px 12px;
+        z-index: 2;
+        white-space: nowrap;
+      }}
+      .lb-table td {{
+        padding: 10px 12px;
+        border-bottom: 1px solid #1e232b;
+        color: #d7dbe3;
+      }}
+      .lb-table tr:nth-child(even) td {{
+        background: #0f1217;
+      }}
+      .lb-table tr:hover td {{
+        background: #141922;
+      }}
+      .lb-table td:first-child,
+      .lb-table th:first-child {{
+        position: sticky;
+        left: 0;
+        background: #0f1116;
+        z-index: 3;
+      }}
+      .lb-table td:nth-child(2),
+      .lb-table th:nth-child(2) {{
+        position: sticky;
+        left: 48px;
+        background: #0f1116;
+        z-index: 3;
+        min-width: 240px;
+      }}
+      .lb-table a {{
+        color: #9ecbff;
+        text-decoration: none;
+      }}
+      .lb-table a:hover {{
+        text-decoration: underline;
+      }}
+      .num-cell {{
+        display: inline-block;
+        min-width: 64px;
+        padding: 4px 6px;
+        border-radius: 6px;
+        color: #fff;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }}
+    </style>
+    <div class="lb-wrap">
+      <table class="lb-table">
         <thead>
           <tr>{header_html}</tr>
         </thead>
@@ -177,11 +297,8 @@ def main():
     with gr.Blocks(title="JUA Leaderboard") as demo:
         gr.Markdown("# JUA Leaderboard")
         gr.Markdown(
-            "Benchmark público para avaliação de modelos de recuperação em português, "
-            "com foco em jurisprudência e normativos. "
-            "Ordenação padrão por `overall` (média de NDCG@10 entre benchmarks selecionados)."
+            "Public benchmark for evaluating retrieval models in Portuguese"
         )
-        gr.Markdown(f"Results directory: `{RESULTS_DIR}`")
 
         with gr.Row():
             benchmark = gr.CheckboxGroup(choices=_init_choices(), value=_init_choices(), label="Benchmarks")
@@ -190,16 +307,20 @@ def main():
                 value="overall",
                 label="Order by (overall = mean ndcg@10)",
             )
-            refresh = gr.Button("Refresh")
+            kind_filter = gr.Dropdown(
+                choices=["all", "retrieval", "reranker"],
+                value="all",
+                label="Model Type",
+            )
 
-        table_html = gr.HTML(build_table_html(_init_choices(), "overall"))
+        table_html = gr.HTML(build_table_html(_init_choices(), "overall", "all"))
 
-        def _refresh(bmks, metric):
-            return build_table_html(bmks, metric)
+        def _refresh(bmks, metric, kind):
+            return build_table_html(bmks, metric, kind)
 
-        refresh.click(_refresh, inputs=[benchmark, order_metric], outputs=[table_html])
-        benchmark.change(_refresh, inputs=[benchmark, order_metric], outputs=[table_html])
-        order_metric.change(_refresh, inputs=[benchmark, order_metric], outputs=[table_html])
+        benchmark.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table_html])
+        order_metric.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table_html])
+        kind_filter.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table_html])
 
         gr.Markdown("---")
 
