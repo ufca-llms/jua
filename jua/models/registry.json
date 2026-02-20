@@ -1,0 +1,31 @@
+[
+  {
+    "id": "random-384-42",
+    "adapter": "random",
+    "dim": 384,
+    "seed": 42,
+    "batch_size": 128,
+    "meta": {
+      "name": "random/384-42",
+      "provider": "random",
+      "description": "Random embedding baseline",
+      "model_type": ["baseline"],
+      "modalities": ["text"]
+    }
+  },
+  {
+    "id": "qwen3-embedding-0.6b",
+    "adapter": "sbert",
+    "model_name": "Qwen/Qwen3-Embedding-0.6B",
+    "batch_size": 128,
+    "meta": {
+      "name": "Qwen/Qwen3-Embedding-0.6B",
+      "provider": "Qwen",
+      "url": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B",
+      "description": "Qwen3 Embedding 0.6B",
+      "model_type": ["dense-retrieval"],
+      "modalities": ["text"],
+      "languages": ["multilingual"]
+    }
+  }
+]

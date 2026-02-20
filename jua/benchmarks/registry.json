@@ -1,0 +1,38 @@
+[
+  {
+    "id": "jua",
+    "name": "JuaRetrieval",
+    "source": "hf",
+    "hf_id": "ufca-llms/jua",
+    "corpus_file": "corpus.jsonl",
+    "queries_file": "queries.jsonl",
+    "qrels_file": "qrels/test.tsv"
+  },
+  {
+    "id": "juris-tcu",
+    "name": "JurisTCURetrieval",
+    "source": "hf",
+    "hf_id": "ufca-llms/juris-tcu",
+    "corpus_file": "corpus.jsonl",
+    "queries_file": "queries.jsonl",
+    "qrels_file": "qrels/test.jsonl"
+  },
+  {
+    "id": "normas-tcu",
+    "name": "NormasTCURetrieval",
+    "source": "hf",
+    "hf_id": "ufca-llms/normas-tcu",
+    "corpus_file": "corpus.jsonl",
+    "queries_file": "queries.jsonl",
+    "qrels_file": "qrels/test.jsonl"
+  },
+  {
+    "id": "ulysses-rfcorpus",
+    "name": "UlyssesRFCorpusRetrieval",
+    "source": "hf",
+    "hf_id": "ufca-llms/Ulysses-RFCorpus",
+    "corpus_file": "corpus.jsonl",
+    "queries_file": "queries.jsonl",
+    "qrels_file": "qrels/test.jsonl"
+  }
+]

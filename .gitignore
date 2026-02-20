@@ -215,3 +215,5 @@ output/
 py312_env/
 wandb/
 dataset.zip
+.vscode/
+.DS_Store
