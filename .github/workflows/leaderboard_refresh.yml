@@ -35,7 +35,7 @@ jobs:
       - name: Check if image with current SHA exists
         id: image
         run: |
-          if docker manifest inspect ghcr.io/${{ github.repository }}/leaderboard:${{ github.sha }} > /dev/null 2>&1; then
+          if docker manifest inspect ghcr.io/${{ github.repository }}:${{ github.sha }} > /dev/null 2>&1; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
@@ -49,8 +49,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/leaderboard:${{ github.sha }}
-            ghcr.io/${{ github.repository }}/leaderboard:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
