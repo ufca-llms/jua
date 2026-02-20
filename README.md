@@ -14,7 +14,7 @@ import jua
 
 model = jua.get_model("qwen3-embedding-0.6b")
 tasks = jua.get_tasks("jua", source="local", dataset_path="./jua-dataset")
-jua.run(model, tasks, output_dir="leaderboard")
+jua.run(model, tasks, output_dir="results/leaderboard")
 ```
 
 ### CLI runner
@@ -23,13 +23,13 @@ python -m jua.cli \
   run \
   --model qwen3-embedding-0.6b \
   --benchmark jua \
-  --output_dir leaderboard
+  --output_dir results/leaderboard
 ```
 
 ### Leaderboard output
-Results are saved under `leaderboard/<model>/` with one JSON per benchmark task plus `model_meta.json`.
+Results are saved under `results/leaderboard/<model>/` with one JSON per benchmark task plus `model_meta.json`.
 ```
-leaderboard/
+results/leaderboard/
   openai_text-embedding-3-small/
     model_meta.json
     JuaRetrieval.json

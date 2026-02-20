@@ -21,7 +21,7 @@ def main():
     run_parser.add_argument("--benchmark", default="jua", help="Benchmark id (registry) or legacy name")
     run_parser.add_argument("--dataset_registry", default=None, help="Path to dataset registry JSON")
     run_parser.add_argument("--all_datasets", action="store_true", help="Run on all registered datasets")
-    run_parser.add_argument("--output_dir", default="leaderboard", help="Leaderboard output dir")
+    run_parser.add_argument("--output_dir", default="results/leaderboard", help="Leaderboard output dir")
     run_parser.add_argument("--model_meta_json", default=None, help="Path to a JSON file with model metadata")
     run_parser.add_argument("--overall_metric", default=None, help="Overall metric (e.g. ndcg@10, mrr@10, map@10)")
 

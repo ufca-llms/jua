@@ -36,7 +36,7 @@ def _overall_score(metrics: dict[str, Any], overall_metric: str | None = None) -
     return None
 
 
-def run(model, tasks: list[Task], output_dir: str = "leaderboard", overall_metric: str | None = None, **kwargs):
+def run(model, tasks: list[Task], output_dir: str = "results/leaderboard", overall_metric: str | None = None, **kwargs):
     os.makedirs(output_dir, exist_ok=True)
     results = []
 
