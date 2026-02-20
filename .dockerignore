@@ -1,0 +1,19 @@
+__pycache__/
+*.py[codz]
+*.egg-info/
+.git/
+.gitignore
+.vscode/
+.DS_Store
+.env
+.venv/
+myenv/
+py312_env/
+embeddings/
+results/
+output/
+wandb/
+# data and datasets can be large
+jua-dataset/
+data/
+*.zip
