@@ -4,9 +4,14 @@ import base64
 import json
 import os
 import html
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import gradio as gr
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+from pandas.api.types import is_numeric_dtype
 
 RESULTS_DIR = os.environ.get("JUA_LEADERBOARD_DIR", "leaderboard")
 ASSETS_DIR = os.environ.get("JUA_ASSETS_DIR", "assets")
@@ -123,40 +128,29 @@ def _pivot(rows: List[Dict[str, Any]], benchmarks: List[str]) -> List[Dict[str, 
     return pivot
 
 
-def _fmt(value: Any) -> str:
-    if value is None:
-        return "-"
-    if isinstance(value, float):
-        return f"{value:.4f}"
-    return str(value)
+def _get_column_widths(df: pd.DataFrame) -> list[str]:
+    widths = []
+    for column_name in df.columns:
+        column_word_lengths = [len(word) for word in str(column_name).split()]
+        if is_numeric_dtype(df[column_name]):
+            value_lengths = [len(f"{value:.2f}") for value in df[column_name]]
+        else:
+            value_lengths = [len(str(value)) for value in df[column_name]]
+        max_length = max(max(column_word_lengths), max(value_lengths))
+        n_pixels = 25 + (max_length * 10)
+        widths.append(f"{n_pixels}px")
+    return widths
 
 
-def _column_ranges(rows: List[Dict[str, Any]], benchmarks: List[str]) -> Dict[str, tuple[float, float]]:
-    ranges: Dict[str, tuple[float, float]] = {}
-    keys = benchmarks + ["overall"]
-    for k in keys:
-        vals = [r.get(k) for r in rows if isinstance(r.get(k), (int, float))]
-        if not vals:
-            continue
-        ranges[k] = (min(vals), max(vals))
-    return ranges
+def _create_light_green_cmap():
+    cmap = plt.get_cmap("Greens")
+    num_colors = 256
+    half_colors = np.linspace(0, 0.5, num_colors)
+    half_cmap = [cmap(val) for val in half_colors]
+    return LinearSegmentedColormap.from_list("LightGreens", half_cmap, N=256)
 
 
-def _heat_color(value: float, vmin: float, vmax: float) -> str:
-    if vmax <= vmin:
-        t = 1.0
-    else:
-        t = (value - vmin) / (vmax - vmin)
-    # purple to green scale (like mteb-ish)
-    r1, g1, b1 = (88, 54, 158)
-    r2, g2, b2 = (46, 163, 102)
-    r = int(r1 + (r2 - r1) * t)
-    g = int(g1 + (g2 - g1) * t)
-    b = int(b1 + (b2 - b1) * t)
-    return f"rgb({r},{g},{b})"
-
-
-def build_table_html(selected_benchmarks: List[str], order_metric: str, kind_filter: str) -> str:
+def build_table_df(selected_benchmarks: List[str], order_metric: str, kind_filter: str) -> Tuple[pd.DataFrame, List[str]]:
     rows = _collect_results(RESULTS_DIR)
     if kind_filter != "all":
         rows = [r for r in rows if r.get("model_kind") == kind_filter]
@@ -168,124 +162,23 @@ def build_table_html(selected_benchmarks: List[str], order_metric: str, kind_fil
     metric_key = order_metric
     pivot.sort(key=lambda r: (r.get(metric_key) is None, -(r.get(metric_key) or 0.0)))
 
-    ranges = _column_ranges(pivot, benchmarks)
-
-    headers = ["rank", "model"] + [_display_benchmark(b) for b in benchmarks] + ["overall"]
-
-    html_rows = []
+    display_cols = ["Rank", "Model"] + [_display_benchmark(b) for b in benchmarks] + ["Overall"]
+    rows_out = []
     for idx, r in enumerate(pivot, start=1):
-        model_name = html.escape(r.get("model", ""))
+        model_name = r.get("model", "")
         model_url = r.get("model_url")
         if model_url:
-            model_cell = f'<a href="{html.escape(model_url)}" target="_blank">{model_name}</a>'
+            model_cell = f"[{model_name}]({model_url})"
         else:
             model_cell = model_name
+        row = [idx, model_cell]
+        row.extend([r.get(b) for b in benchmarks])
+        row.append(r.get("overall"))
+        rows_out.append(row)
 
-        cells = [str(idx), model_cell]
-        for b in benchmarks:
-            val = r.get(b)
-            if isinstance(val, (int, float)) and b in ranges:
-                vmin, vmax = ranges[b]
-                bg = _heat_color(float(val), vmin, vmax)
-                cells.append(f'<span class="num-cell" style="background:{bg};">{_fmt(val)}</span>')
-            else:
-                cells.append(_fmt(val))
-        overall_val = r.get("overall")
-        if isinstance(overall_val, (int, float)) and "overall" in ranges:
-            vmin, vmax = ranges["overall"]
-            bg = _heat_color(float(overall_val), vmin, vmax)
-            cells.append(f'<span class="num-cell" style="background:{bg};">{_fmt(overall_val)}</span>')
-        else:
-            cells.append(_fmt(overall_val))
-
-        html_cells = "".join([f"<td>{c}</td>" for c in cells])
-        html_rows.append(f"<tr>{html_cells}</tr>")
-
-    header_html = "".join([f"<th>{html.escape(h)}</th>" for h in headers])
-    body_html = "".join(html_rows)
-
-    return f"""
-    <style>
-      .lb-wrap {{
-        max-height: 520px;
-        overflow: auto;
-        border: 1px solid #2a2f3a;
-        border-radius: 14px;
-        box-shadow: 0 0 0 1px rgba(255,255,255,0.02) inset;
-      }}
-      .lb-table {{
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        font-size: 13px;
-      }}
-      .lb-table th {{
-        position: sticky;
-        top: 0;
-        background: linear-gradient(180deg, #171a21 0%, #12151b 100%);
-        color: #e9edf3;
-        text-transform: uppercase;
-        font-size: 11px;
-        letter-spacing: 0.08em;
-        border-bottom: 1px solid #2a2f3a;
-        padding: 10px 12px;
-        z-index: 2;
-        white-space: nowrap;
-      }}
-      .lb-table td {{
-        padding: 10px 12px;
-        border-bottom: 1px solid #1e232b;
-        color: #d7dbe3;
-      }}
-      .lb-table tr:nth-child(even) td {{
-        background: #0f1217;
-      }}
-      .lb-table tr:hover td {{
-        background: #141922;
-      }}
-      .lb-table td:first-child,
-      .lb-table th:first-child {{
-        position: sticky;
-        left: 0;
-        background: #0f1116;
-        z-index: 3;
-      }}
-      .lb-table td:nth-child(2),
-      .lb-table th:nth-child(2) {{
-        position: sticky;
-        left: 48px;
-        background: #0f1116;
-        z-index: 3;
-        min-width: 240px;
-      }}
-      .lb-table a {{
-        color: #9ecbff;
-        text-decoration: none;
-      }}
-      .lb-table a:hover {{
-        text-decoration: underline;
-      }}
-      .num-cell {{
-        display: inline-block;
-        min-width: 64px;
-        padding: 4px 6px;
-        border-radius: 6px;
-        color: #fff;
-        text-align: center;
-        font-variant-numeric: tabular-nums;
-      }}
-    </style>
-    <div class="lb-wrap">
-      <table class="lb-table">
-        <thead>
-          <tr>{header_html}</tr>
-        </thead>
-        <tbody>
-          {body_html}
-        </tbody>
-      </table>
-    </div>
-    """
+    df = pd.DataFrame(rows_out, columns=display_cols)
+    numeric_cols = [c for c in df.columns if c not in ("Rank", "Model")]
+    return df, numeric_cols
 
 
 def _init_choices() -> List[str]:
@@ -293,12 +186,36 @@ def _init_choices() -> List[str]:
     return _available_benchmarks(rows)
 
 
+def _build_table_component(bmks: List[str], metric: str, kind: str) -> gr.DataFrame:
+    df, numeric_cols = build_table_df(bmks, metric, kind)
+    cmap = _create_light_green_cmap()
+    styled = df.style.format({col: "{:.4f}" for col in numeric_cols}).background_gradient(
+        cmap=cmap, subset=numeric_cols
+    )
+    column_widths = _get_column_widths(df)
+    if len(column_widths) > 0:
+        column_widths[0] = "80px"
+    if len(column_widths) > 1:
+        column_widths[1] = "280px"
+
+    return gr.DataFrame(
+        styled,
+        datatype=["number", "markdown"] + ["number"] * (len(df.columns) - 2),
+        interactive=False,
+        pinned_columns=2,
+        column_widths=column_widths,
+    )
+
+
 def main():
     with gr.Blocks(title="JUA Leaderboard") as demo:
         gr.Markdown("# JUA Leaderboard")
         gr.Markdown(
-            "Public benchmark for evaluating retrieval models in Portuguese"
+            "Benchmark público para avaliação de modelos de recuperação em português, "
+            "com foco em jurisprudência e normativos. "
+            "Ordenação padrão por `overall` (média de NDCG@10 entre benchmarks selecionados)."
         )
+        gr.Markdown(f"Results directory: `{RESULTS_DIR}`")
 
         with gr.Row():
             benchmark = gr.CheckboxGroup(choices=_init_choices(), value=_init_choices(), label="Benchmarks")
@@ -313,14 +230,14 @@ def main():
                 label="Model Type",
             )
 
-        table_html = gr.HTML(build_table_html(_init_choices(), "overall", "all"))
+        table = _build_table_component(_init_choices(), "overall", "all")
 
         def _refresh(bmks, metric, kind):
-            return build_table_html(bmks, metric, kind)
+            return _build_table_component(bmks, metric, kind)
 
-        benchmark.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table_html])
-        order_metric.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table_html])
-        kind_filter.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table_html])
+        benchmark.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table])
+        order_metric.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table])
+        kind_filter.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table])
 
         gr.Markdown("---")
 

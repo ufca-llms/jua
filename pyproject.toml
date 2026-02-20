@@ -13,6 +13,9 @@ dependencies = [
 [project.optional-dependencies]
 ui = [
     "gradio",
+    "pandas",
+    "numpy",
+    "matplotlib",
 ]
 
 

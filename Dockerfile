@@ -10,7 +10,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir uv
 
 COPY pyproject.toml /app/pyproject.toml
-RUN uv pip install --system gradio
+RUN uv pip install --system gradio pandas numpy matplotlib
 
 COPY . /app
 
