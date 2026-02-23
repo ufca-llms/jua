@@ -1,0 +1,25 @@
+{
+  "model": "sbert/Qwen/Qwen3-Embedding-4B",
+  "kind": "retrieval",
+  "meta": {
+    "name": "Qwen/Qwen3-Embedding-4B",
+    "provider": "Qwen",
+    "description": "Qwen3 Embedding 4B",
+    "url": "https://huggingface.co/Qwen/Qwen3-Embedding-4B",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "languages": [
+      "multilingual"
+    ],
+    "extra": {
+      "batch_size": 1
+    }
+  }
+}

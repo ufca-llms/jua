@@ -1,0 +1,20 @@
+{
+  "model": "rerank/dense/Qwen/Qwen3-Embedding-8B",
+  "kind": "rerank",
+  "meta": {
+    "name": "Qwen/Qwen3-Embedding-8B (rerank)",
+    "provider": "Qwen",
+    "description": "Dense reranking over BM25 results using precomputed Qwen3-Embedding-8B embeddings",
+    "url": "https://huggingface.co/Qwen/Qwen3-Embedding-8B",
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "reranker"
+    ],
+    "extra": {
+      "results_file": "results/anserini_bm25_normas-tcu.json",
+      "embeddings_dir": "embeddings/normas-tcu/sbert_Qwen_Qwen3-Embedding-8B"
+    }
+  }
+}

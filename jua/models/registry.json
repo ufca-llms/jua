@@ -156,5 +156,31 @@
       "model_type": ["reranker"],
       "modalities": ["text"]
     }
+  },
+  {
+    "id": "rerank-qwen3-embedding-8b",
+    "adapter": "rerank/dense",
+    "model_name": "Qwen/Qwen3-Embedding-8B",
+    "meta": {
+      "name": "Qwen/Qwen3-Embedding-8B (rerank)",
+      "provider": "Qwen",
+      "url": "https://huggingface.co/Qwen/Qwen3-Embedding-8B",
+      "description": "Dense reranking over BM25 results using precomputed Qwen3-Embedding-8B embeddings",
+      "model_type": ["reranker"],
+      "modalities": ["text"]
+    }
+  },
+  {
+    "id": "rerank-qwen3-embedding-4b",
+    "adapter": "rerank/dense",
+    "model_name": "Qwen/Qwen3-Embedding-4B",
+    "meta": {
+      "name": "Qwen/Qwen3-Embedding-4B (rerank)",
+      "provider": "Qwen",
+      "url": "https://huggingface.co/Qwen/Qwen3-Embedding-4B",
+      "description": "Dense reranking over BM25 results using precomputed Qwen3-Embedding-4B embeddings",
+      "model_type": ["reranker"],
+      "modalities": ["text"]
+    }
   }
 ]
