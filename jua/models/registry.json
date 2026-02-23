@@ -115,6 +115,36 @@
     }
   },
   {
+    "id": "kalm-embedding-gemma3-12b-2511",
+    "adapter": "sbert",
+    "model_name": "tencent/KaLM-Embedding-Gemma3-12B-2511",
+    "batch_size": 128,
+    "meta": {
+      "name": "tencent/KaLM-Embedding-Gemma3-12B-2511",
+      "provider": "Tencent",
+      "url": "https://huggingface.co/tencent/KaLM-Embedding-Gemma3-12B-2511",
+      "description": "KaLM Embedding Gemma3 12B (2511) embeddings",
+      "model_type": ["dense-retrieval"],
+      "modalities": ["text"],
+      "languages": ["multilingual"]
+    }
+  },
+  {
+    "id": "llama-embed-nemotron-8b",
+    "adapter": "sbert",
+    "model_name": "nvidia/llama-embed-nemotron-8b",
+    "batch_size": 128,
+    "meta": {
+      "name": "nvidia/llama-embed-nemotron-8b",
+      "provider": "NVIDIA",
+      "url": "https://huggingface.co/nvidia/llama-embed-nemotron-8b",
+      "description": "Llama-Embed Nemotron 8B embeddings",
+      "model_type": ["dense-retrieval"],
+      "modalities": ["text"],
+      "languages": ["multilingual"]
+    }
+  },
+  {
     "id": "jua-v2-rerank",
     "adapter": "rerank/dense",
     "model_name": "ufca-llms/Qwen3-Embedding-0.6B-jua-v2",

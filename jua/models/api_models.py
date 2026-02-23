@@ -63,6 +63,9 @@ class SbertModel(BaseModel):
         retriever = EvaluateRetrieval(model, score_function="cos_sim")
 
         embeddings_dir = kwargs.get("embeddings_dir") or f"./embeddings/{dataset_name}/sbert_{self.model_name.replace('/', '_')}"
+        print(f"[sbert] Encoding corpus for dataset: {dataset_name}")
+        print(f"[sbert] Encoding queries for dataset: {dataset_name}")
+        print(f"[sbert] Embeddings dir: {embeddings_dir}")
         results = retriever.encode_and_retrieve(
             corpus,
             queries,

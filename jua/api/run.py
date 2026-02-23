@@ -49,6 +49,7 @@ def run(
     results = []
 
     for task in tasks:
+        print(f"Running benchmark: {task.name}")
         corpus, queries, qrels = load_task_dataset(task)
         dataset_name = task.name
 
