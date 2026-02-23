@@ -249,7 +249,7 @@ class RerankDenseModel(BaseModel):
 
     def evaluate(self, corpus, queries, qrels, dataset_name: str, **kwargs) -> ModelResult:
         results_file = kwargs.get("results_file") or self.results_file or _auto_results_file(dataset_name)
-        embeddings_dir = kwargs.get("embeddings_dir") or self.embeddings_dir or _auto_embeddings_dir(self.model_name)
+        embeddings_dir = kwargs.get("embeddings_dir") or self.embeddings_dir or _auto_embeddings_dir(self.model_name, dataset_name)
 
         # Reuse existing pipeline (writes results to file)
         evaluate_reranking_dense(
@@ -329,7 +329,7 @@ def _auto_results_file(dataset_name: str) -> str:
     )
 
 
-def _auto_embeddings_dir(model_name: str) -> str:
+def _auto_embeddings_dir(model_name: str, dataset_name: str | None = None) -> str:
     safe_model = model_name.replace("/", "_")
     candidates = [
         f"embeddings/openai_{safe_model}",
@@ -343,6 +343,19 @@ def _auto_embeddings_dir(model_name: str) -> str:
     matches = glob.glob(f"embeddings/**/openai_{safe_model}", recursive=True)
     if len(matches) == 1:
         return matches[0]
+
+    # Try dataset-scoped folders (new structure)
+    if dataset_name:
+        ds_slug = _slugify_benchmark(dataset_name)
+        dataset_candidates = [
+            f"embeddings/{ds_slug}/openai_{safe_model}",
+            f"embeddings/{ds_slug}/openai_{safe_model.replace('text-embedding', 'text-embedding')}",
+            f"embeddings/embeddings 2/{ds_slug}",
+            f"embeddings/embeddings 2/{ds_slug.replace('-', '_')}",
+        ]
+        for path in dataset_candidates:
+            if os.path.isdir(path):
+                return path
 
     raise FileNotFoundError(
         "Could not infer embeddings directory. Provide --embeddings_dir or set it in registry.json."
