@@ -25,8 +25,12 @@ def _ensure_dir(path: str) -> None:
 
 
 def _metrics_bundle(retriever: EvaluateRetrieval, qrels, results) -> Dict[str, Any]:
-    ndcg, _map, recall, precision = retriever.evaluate(qrels, results, retriever.k_values, ignore_identical_ids=False)
-    mrr = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
+    # Filter results to qrels keys to avoid KeyError in custom metrics
+    filtered_results = {qid: res for qid, res in results.items() if qid in qrels}
+    if len(filtered_results) != len(results):
+        print(f"[metrics] {len(results)} queries retrieved, {len(filtered_results)} queries in qrels")
+    ndcg, _map, recall, precision = retriever.evaluate(qrels, filtered_results, retriever.k_values, ignore_identical_ids=False)
+    mrr = retriever.evaluate_custom(qrels, filtered_results, retriever.k_values, metric="mrr")
     return {
         "ndcg": ndcg,
         "map": _map,
@@ -66,6 +70,10 @@ class SbertModel(BaseModel):
         print(f"[sbert] Encoding corpus for dataset: {dataset_name}")
         print(f"[sbert] Encoding queries for dataset: {dataset_name}")
         print(f"[sbert] Embeddings dir: {embeddings_dir}")
+        # Optionally filter queries to only those present in qrels
+        if kwargs.get("filter_queries_by_qrels"):
+            queries = {qid: queries[qid] for qid in qrels.keys() if qid in queries}
+            print(f"[sbert] Filtered queries to {len(queries)} based on qrels")
         results = retriever.encode_and_retrieve(
             corpus,
             queries,

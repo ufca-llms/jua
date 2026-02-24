@@ -33,6 +33,7 @@ def main():
     run_parser.add_argument("--chunk_size", type=int, default=100, help="BM25 query batch size")
     run_parser.add_argument("--results_file", default=None, help="Reranking input results file")
     run_parser.add_argument("--embeddings_dir", default=None, help="Embeddings directory for reranking")
+    run_parser.add_argument("--filter_queries_by_qrels", action="store_true", help="Only encode queries present in qrels")
 
     args = parser.parse_args()
 
@@ -80,6 +81,7 @@ def main():
         results_output_dir=args.results_output_dir,
         overall_metric=args.overall_metric,
         embeddings_dir=args.embeddings_dir,
+        filter_queries_by_qrels=args.filter_queries_by_qrels,
     )
 
 
