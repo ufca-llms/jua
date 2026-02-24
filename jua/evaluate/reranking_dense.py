@@ -99,7 +99,7 @@ def evaluate_reranking_dense(
     filtered_results = {qid: res for qid, res in rerank_results.items() if qid in qrels}
     if not filtered_results:
         raise ValueError("No reranked results match qrels. Check embeddings/query IDs and dataset alignment.")
-
+    print(len(qrels))
     ndcg, _map, recall, precision = EvaluateRetrieval.evaluate(qrels, filtered_results, [1, 3, 5, 10, 100], ignore_identical_ids=False)
 
     mrr = EvaluateRetrieval.evaluate_custom(qrels, filtered_results, [1, 3, 5, 10, 100], metric="mrr")

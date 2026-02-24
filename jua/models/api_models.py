@@ -72,6 +72,7 @@ class SbertModel(BaseModel):
             encode_output_path=embeddings_dir,
             overwrite=kwargs.get("overwrite", False),
         )
+        print(len(results), "queries retrieved", len(qrels), "queries in qrels")
         metrics = _metrics_bundle(retriever, qrels, results)
         return ModelResult(metrics=metrics, results=results)
 
