@@ -208,12 +208,17 @@ def _build_table_component(bmks: List[str], metric: str, kind: str) -> gr.DataFr
 
 
 def main():
-    with gr.Blocks(title="JUA Leaderboard") as demo:
-        gr.Markdown("# JUA Leaderboard")
+    with gr.Blocks(title="JUÁ Leaderboard") as demo:
+        gr.Markdown("# JUÁ Leaderboard")
         gr.Markdown(
-            "Benchmark público para avaliação de modelos de recuperação em português, "
-            "com foco em jurisprudência e normativos. "
-            "Ordenação padrão por `overall` (média de NDCG@10 entre benchmarks selecionados)."
+            "This is a public benchmark for evaluating retrieval models in Portuguese, "
+            "with a focus on legal documents and regulations. "
+        )
+        # add separator
+        gr.Markdown("---")
+        gr.Markdown(
+            "Use the controls below to filter and sort the models based on their performance on different benchmarks. " 
+            "The table shows the NDCG@10 scores for each model on the selected benchmarks, as well as an overall average score."
         )
 
         with gr.Row():
@@ -244,9 +249,15 @@ def main():
         brasao_uri = _img_to_data_uri(UFCA_BRASAO)
         llms_uri = _img_to_data_uri(UFCA_LLMS_LOGO)
         if brasao_uri:
-            logo_html.append(f'<img src="{brasao_uri}" style="width:100px;height:auto;"/>')
+            logo_html.append(
+                f'<a href="https://ufca.edu.br" target="_blank">'
+                f'<img src="{brasao_uri}" style="width:100px;height:auto;"/></a>'
+            )
         if llms_uri:
-            logo_html.append(f'<img src="{llms_uri}" style="width:100px;height:auto;"/>')
+            logo_html.append(
+                f'<a href="https://ufca-llms.github.io" target="_blank">'
+                f'<img src="{llms_uri}" style="width:100px;height:auto;"/></a>'
+            )
         if logo_html:
             gr.HTML(
                 '<div style="display:flex;gap:24px;align-items:center;justify-content:center;">'

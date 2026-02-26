@@ -115,3 +115,4 @@ def evaluate_reranking_dense(
         "MRR": mrr
     }, open(f"results/{safe_model_name}_reranked_metrics.json", "w"))
     json.dump(filtered_results, open(f"results/{safe_model_name}_reranked_jua.json", "w")) 
+
