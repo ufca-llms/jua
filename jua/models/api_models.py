@@ -357,6 +357,10 @@ def _auto_embeddings_dir(model_name: str, dataset_name: str | None = None) -> st
     if dataset_name:
         ds_slug = _slugify_benchmark(dataset_name)
         dataset_candidates = [
+            f"embeddings/{dataset_name}/sbert_{safe_model}",
+            f"embeddings/{dataset_name}/sbert_{safe_model.lower()}",
+            f"embeddings/{ds_slug}/sbert_{safe_model}",
+            f"embeddings/{ds_slug}/sbert_{safe_model.lower()}",
             f"embeddings/{ds_slug}/openai_{safe_model}",
             f"embeddings/{ds_slug}/openai_{safe_model.replace('text-embedding', 'text-embedding')}",
             f"embeddings/embeddings 2/{ds_slug}",
