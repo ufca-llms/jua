@@ -214,6 +214,7 @@ def main():
             "This is a public benchmark for evaluating retrieval models in Portuguese, "
             "with a focus on legal documents and regulations. "
         )
+        gr.Markdown("📄 Documentation: https://github.com/ufca-llms/jua/tree/main/docs")
         # add separator
         gr.Markdown("---")
         gr.Markdown(
