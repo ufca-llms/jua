@@ -182,5 +182,33 @@
       "model_type": ["reranker"],
       "modalities": ["text"]
     }
+  },
+  {
+    "id": "qwen3-embedding-4b-jua",
+    "adapter": "sbert",
+    "model_name": "ufca-llms/Qwen3-Embedding-4B-jua",
+    "batch_size": 128,
+    "meta": {
+      "name": "ufca-llms/Qwen3-Embedding-4B-jua",
+      "provider": "ufca-llms",
+      "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-4B-jua",
+      "description": "Qwen3 Embedding 4B fine-tuned on JUÁ",
+      "model_type": ["dense-retrieval"],
+      "modalities": ["text"],
+      "languages": ["pt"]
+    }
+  },
+  {
+    "id": "rerank-qwen3-embedding-4b-jua",
+    "adapter": "rerank/dense",
+    "model_name": "ufca-llms/Qwen3-Embedding-4B-jua",
+    "meta": {
+      "name": "ufca-llms/Qwen3-Embedding-4B-jua (rerank)",
+      "provider": "ufca-llms",
+      "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-4B-jua",
+      "description": "Dense reranking over BM25 results using precomputed Qwen3-Embedding-4B-jua embeddings",
+      "model_type": ["reranker"],
+      "modalities": ["text"]
+    }
   }
 ]

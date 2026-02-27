@@ -1,0 +1,20 @@
+{
+  "model": "rerank/dense/ufca-llms/Qwen3-Embedding-4B-jua",
+  "kind": "rerank",
+  "meta": {
+    "name": "ufca-llms/Qwen3-Embedding-4B-jua (rerank)",
+    "provider": "ufca-llms",
+    "description": "Dense reranking over BM25 results using precomputed Qwen3-Embedding-4B-jua embeddings",
+    "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-4B-jua",
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "reranker"
+    ],
+    "extra": {
+      "results_file": "results/anserini_bm25_normas-tcu.json",
+      "embeddings_dir": null
+    }
+  }
+}

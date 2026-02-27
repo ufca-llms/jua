@@ -1,0 +1,25 @@
+{
+  "model": "sbert/ufca-llms/Qwen3-Embedding-4B-jua",
+  "kind": "retrieval",
+  "meta": {
+    "name": "ufca-llms/Qwen3-Embedding-4B-jua",
+    "provider": "ufca-llms",
+    "description": "Qwen3 Embedding 4B fine-tuned on JUÁ",
+    "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-4B-jua",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "languages": [
+      "pt"
+    ],
+    "extra": {
+      "batch_size": 64
+    }
+  }
+}
