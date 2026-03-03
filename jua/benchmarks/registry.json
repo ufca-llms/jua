@@ -34,5 +34,14 @@
     "corpus_file": "corpus.jsonl",
     "queries_file": "queries.jsonl",
     "qrels_file": "qrels/test.jsonl"
+  },
+  {
+    "id": "br-taxqa",
+    "name": "BRTaxQARetrieval",
+    "source": "hf",
+    "hf_id": "ufca-llms/BR-TaxQA",
+    "corpus_file": "corpus.jsonl",
+    "queries_file": "queries.jsonl",
+    "qrels_file": "qrels/test.jsonl"
   }
 ]
