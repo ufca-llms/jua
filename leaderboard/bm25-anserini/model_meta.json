@@ -2,6 +2,20 @@
   "model": "bm25/anserini",
   "kind": "retrieval",
   "meta": {
-    "provider": "anserini"
+    "name": "bm25/anserini",
+    "provider": "anserini",
+    "description": "BM25 via Anserini (pyserini-fastapi).",
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "bm25",
+      "retrieval"
+    ],
+    "extra": {
+      "index_name": null,
+      "server_url": "http://127.0.0.1:8000",
+      "chunk_size": 100
+    }
   }
 }

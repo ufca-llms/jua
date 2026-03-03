@@ -14,6 +14,20 @@
     }
   },
   {
+    "id": "bm25-anserini",
+    "adapter": "bm25/anserini",
+    "index_name": null,
+    "server_url": "http://127.0.0.1:8000",
+    "chunk_size": 100,
+    "meta": {
+      "name": "bm25/anserini",
+      "provider": "anserini",
+      "description": "BM25 via Anserini (pyserini-fastapi).",
+      "model_type": ["bm25", "retrieval"],
+      "modalities": ["text"]
+    }
+  },
+  {
     "id": "qwen3-embedding-0.6b",
     "adapter": "sbert",
     "model_name": "Qwen/Qwen3-Embedding-0.6B",
