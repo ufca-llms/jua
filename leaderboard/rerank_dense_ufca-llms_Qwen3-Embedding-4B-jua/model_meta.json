@@ -13,7 +13,7 @@
       "reranker"
     ],
     "extra": {
-      "results_file": "results/anserini_bm25_normas-tcu.json",
+      "results_file": "./results/BRTaxQARetrieval_results.json",
       "embeddings_dir": null
     }
   }

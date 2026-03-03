@@ -19,7 +19,7 @@
       "multilingual"
     ],
     "extra": {
-      "batch_size": 1
+      "batch_size": 32
     }
   }
 }

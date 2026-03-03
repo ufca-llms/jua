@@ -13,8 +13,8 @@
       "reranker"
     ],
     "extra": {
-      "results_file": "results/anserini_bm25_normas-tcu.json",
-      "embeddings_dir": "embeddings/embeddings 2/normas-tcu/sbert_ufca-llms_Qwen3-Embedding-0.6B-jua-V2"
+      "results_file": "./results/BRTaxQARetrieval_results.json",
+      "embeddings_dir": null
     }
   }
 }
