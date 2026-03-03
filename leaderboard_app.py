@@ -14,6 +14,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from pandas.api.types import is_numeric_dtype
 
 RESULTS_DIR = os.environ.get("JUA_LEADERBOARD_DIR", "leaderboard")
+BENCHMARK_REGISTRY = os.environ.get("JUA_BENCHMARK_REGISTRY", "jua/benchmarks/registry.json")
 ASSETS_DIR = os.environ.get("JUA_ASSETS_DIR", "assets")
 UFCA_BRASAO = os.path.join(ASSETS_DIR, "ufca-brasao.png")
 UFCA_LLMS_LOGO = os.path.join(ASSETS_DIR, "ufca-llms.png")
@@ -29,6 +30,30 @@ def _safe_listdir(path: str) -> List[str]:
 def _load_json(path: str) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def _benchmark_url_map() -> Dict[str, str]:
+    if not os.path.exists(BENCHMARK_REGISTRY):
+        return {}
+    try:
+        data = _load_json(BENCHMARK_REGISTRY)
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(data, list):
+        return {}
+    url_map: Dict[str, str] = {}
+    for entry in data:
+        name = entry.get("name")
+        if not name:
+            continue
+        url = entry.get("url")
+        if not url:
+            hf_id = entry.get("hf_id")
+            if hf_id:
+                url = f"https://huggingface.co/datasets/{hf_id}"
+        if url:
+            url_map[name] = url
+    return url_map
 
 
 def _get_metric(metrics: Dict[str, Any], metric: str) -> float | None:
@@ -102,10 +127,14 @@ def _available_benchmarks(rows: List[Dict[str, Any]]) -> List[str]:
     return sorted({r["benchmark"] for r in rows})
 
 
-def _display_benchmark(name: str) -> str:
+def _display_benchmark(name: str, url_map: Dict[str, str] | None = None) -> str:
     if name.endswith("Retrieval"):
         name = name[:-9]
     name = name.replace("RFCorpus", "RF Corpus")
+    if url_map:
+        url = url_map.get(f"{name}Retrieval") or url_map.get(name)
+        if url:
+            return f"[{name}]({url})"
     return name
 
 
@@ -207,6 +236,21 @@ def _build_table_component(bmks: List[str], metric: str, kind: str) -> gr.DataFr
     )
 
 
+def _benchmark_links_md(selected_benchmarks: List[str]) -> str:
+    url_map = _benchmark_url_map()
+    links = []
+    for name in selected_benchmarks:
+        label = _display_benchmark(name)
+        url = url_map.get(name)
+        if url:
+            links.append(f"[{label}]({url})")
+        else:
+            links.append(label)
+    if not links:
+        return ""
+    return "**Benchmarks:** " + " | ".join(links)
+
+
 def main():
     with gr.Blocks(title="JUÁ Leaderboard") as demo:
         gr.Markdown("# JUÁ Leaderboard")
@@ -235,14 +279,15 @@ def main():
                 label="Model Type",
             )
 
+        links_md = gr.Markdown(_benchmark_links_md(_init_choices()))
         table = _build_table_component(_init_choices(), "overall", "all")
 
         def _refresh(bmks, metric, kind):
-            return _build_table_component(bmks, metric, kind)
+            return _benchmark_links_md(bmks), _build_table_component(bmks, metric, kind)
 
-        benchmark.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table])
-        order_metric.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table])
-        kind_filter.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[table])
+        benchmark.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[links_md, table])
+        order_metric.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[links_md, table])
+        kind_filter.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[links_md, table])
 
         gr.Markdown("---")
 
