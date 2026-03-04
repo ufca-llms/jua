@@ -44,7 +44,12 @@ def _load_hf(task: Task) -> Tuple[Dict, Dict, Dict]:
     for row in qrels_ds:
         qid = str(row.get("query-id") or row.get("query_id") or row.get("queryId") or row.get("qid"))
         cid = str(row.get("corpus-id") or row.get("corpus_id") or row.get("corpusId") or row.get("did"))
-        score = int(row.get("score") or row.get("relevance") or 1)
+        raw_score = row.get("score")
+        if raw_score is None:
+            raw_score = row.get("relevance")
+        if raw_score is None:
+            raw_score = 1
+        score = int(raw_score)
         if qid not in qrels:
             qrels[qid] = {}
         qrels[qid][cid] = score
