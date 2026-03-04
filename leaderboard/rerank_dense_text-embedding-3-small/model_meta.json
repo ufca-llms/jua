@@ -13,8 +13,8 @@
       "reranker"
     ],
     "extra": {
-      "results_file": "results/leaderboard/bm25_anserini/BRTaxQARetrieval_results.json",
-      "embeddings_dir": "embeddings/BRTaxQARetrieval/openai_text-embedding-3-small"
+      "results_file": "results/anserini_bm25_normas-tcu.json",
+      "embeddings_dir": "embeddings/normas-tcu/openai_text-embedding-3-small"
     }
   }
 }
