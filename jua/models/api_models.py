@@ -14,6 +14,7 @@ from jua.models.base import BaseModel, ModelResult
 from jua.models.model_meta import ModelMeta
 from jua.models.openai_embeddings import OpenAIEmbeddings
 from jua.models.gemini_embeddings import GeminiEmbeddings
+from jua.models.sbert_backend import MultiDeviceSentenceBERT
 from jua.evaluate.reranking_dense import evaluate_reranking_dense
 from jua.evaluate.reranking_monot5 import evaluate_reranking_monot5
 import glob
@@ -41,7 +42,7 @@ def _metrics_bundle(retriever: EvaluateRetrieval, qrels, results) -> Dict[str, A
 
 
 class SbertModel(BaseModel):
-    def __init__(self, model_name: str, batch_size: int = 128):
+    def __init__(self, model_name: str, batch_size: int = 128, devices: list[str] | None = None):
         super().__init__(
             name=f"sbert/{model_name}",
             kind="retrieval",
@@ -57,11 +58,13 @@ class SbertModel(BaseModel):
         )
         self.model_name = model_name
         self.batch_size = batch_size
+        self.devices = devices or []
 
     def evaluate(self, corpus, queries, qrels, dataset_name: str, **kwargs) -> ModelResult:
-        dense_model = beir_models.SentenceBERT(
+        dense_model = MultiDeviceSentenceBERT(
             self.model_name,
             max_length=3072,
+            devices=self.devices,
         )
         model = DRES(dense_model, batch_size=self.batch_size)
         retriever = EvaluateRetrieval(model, score_function="cos_sim")
@@ -70,16 +73,21 @@ class SbertModel(BaseModel):
         print(f"[sbert] Encoding corpus for dataset: {dataset_name}")
         print(f"[sbert] Encoding queries for dataset: {dataset_name}")
         print(f"[sbert] Embeddings dir: {embeddings_dir}")
+        if self.devices:
+            print(f"[sbert] Devices: {', '.join(self.devices)}")
         # Optionally filter queries to only those present in qrels
         if kwargs.get("filter_queries_by_qrels"):
             queries = {qid: queries[qid] for qid in qrels.keys() if qid in queries}
             print(f"[sbert] Filtered queries to {len(queries)} based on qrels")
-        results = retriever.encode_and_retrieve(
-            corpus,
-            queries,
-            encode_output_path=embeddings_dir,
-            overwrite=kwargs.get("overwrite", False),
-        )
+        try:
+            results = retriever.encode_and_retrieve(
+                corpus,
+                queries,
+                encode_output_path=embeddings_dir,
+                overwrite=kwargs.get("overwrite", False),
+            )
+        finally:
+            dense_model.close()
         print(len(results), "queries retrieved", len(qrels), "queries in qrels")
         metrics = _metrics_bundle(retriever, qrels, results)
         return ModelResult(metrics=metrics, results=results)

@@ -34,6 +34,7 @@ def main():
     run_parser.add_argument("--results_file", default=None, help="Reranking input results file")
     run_parser.add_argument("--embeddings_dir", default=None, help="Embeddings directory for reranking")
     run_parser.add_argument("--filter_queries_by_qrels", action="store_true", help="Only encode queries present in qrels")
+    run_parser.add_argument("--devices", default=None, help="Comma-separated devices for SBERT models, e.g. cuda:0,cuda:1")
 
     args = parser.parse_args()
 
@@ -56,6 +57,8 @@ def main():
         with open(args.model_meta_json, "r", encoding="utf-8") as f:
             model_meta = ModelMeta.from_dict(json.load(f))
 
+    devices = [item.strip() for item in args.devices.split(",") if item.strip()] if args.devices else None
+
     model = jua.get_model(
         args.model,
         batch_size=args.batch_size,
@@ -67,6 +70,7 @@ def main():
         embeddings_dir=args.embeddings_dir,
         registry_path=args.model_registry,
         model_meta=model_meta,
+        devices=devices,
     )
 
     if args.all_datasets:
@@ -82,6 +86,7 @@ def main():
         overall_metric=args.overall_metric,
         embeddings_dir=args.embeddings_dir,
         filter_queries_by_qrels=args.filter_queries_by_qrels,
+        devices=devices,
     )
 
 

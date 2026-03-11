@@ -53,7 +53,11 @@ def get_model(model_id: str, **kwargs):
 
     # Adapter factory
     if adapter == "sbert":
-        model = SbertModel(entry["model_name"], batch_size=kwargs.get("batch_size", entry.get("batch_size", 128)))
+        model = SbertModel(
+            entry["model_name"],
+            batch_size=kwargs.get("batch_size", entry.get("batch_size", 128)),
+            devices=kwargs.get("devices") or entry.get("devices"),
+        )
     elif adapter == "openai":
         model = OpenAIEmbeddingsModel(
             entry["model_name"],
