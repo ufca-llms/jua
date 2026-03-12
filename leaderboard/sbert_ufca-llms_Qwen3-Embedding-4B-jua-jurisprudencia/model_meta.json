@@ -1,0 +1,22 @@
+{
+  "model": "sbert/ufca-llms/Qwen3-Embedding-4B-jua-jurisprudencia",
+  "kind": "retrieval",
+  "meta": {
+    "name": "ufca-llms/Qwen3-Embedding-4B-jua-jurisprudencia",
+    "provider": "ufca-llms",
+    "description": "Qwen3 Embedding 4B fine-tuned on JUÁ jurisprudência",
+    "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-4B-jua-jurisprudencia",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "languages": [
+      "pt"
+    ]
+  }
+}
