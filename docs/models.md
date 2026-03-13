@@ -6,6 +6,9 @@ Models are registered in `jua/models/registry.json`. Each entry includes:
 - `model_name`: model name (HF or similar)
 - `meta`: metadata shown in the leaderboard
 
+If you only want to use a model locally, editing your local `jua/models/registry.json` is enough.
+If you want other people to be able to evaluate the model through this repository, you should open a pull request adding the model entry to the registry.
+
 ## Example (SBERT model)
 ```json
 {
@@ -46,3 +49,17 @@ Models are registered in `jua/models/registry.json`. Each entry includes:
 ```
 python -m jua.cli run --model <id> --benchmark <dataset-id>
 ```
+
+## Sharing a model with the community
+If the goal is to make the model available for other users of this repository, the model registration should be submitted through a pull request.
+
+The PR should include:
+- the new entry in `jua/models/registry.json`
+- enough metadata for leaderboard display and reproducibility
+- leaderboard files under `leaderboard/<model>/` if you are also submitting benchmark results
+
+At minimum, the model metadata should make it clear:
+- what the model is
+- where it comes from
+- whether it is a retrieval model or reranker
+- where others can find it again (for example, a Hugging Face URL)
