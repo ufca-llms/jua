@@ -1,0 +1,24 @@
+{
+  "model": "sbert//home/jovyan/work/output/v1-20260324-195454/checkpoint-250-merged",
+  "kind": "retrieval",
+  "meta": {
+    "name": "jua-250",
+    "provider": "local",
+    "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 250 (merged)",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "languages": [
+      "pt"
+    ],
+    "extra": {
+      "batch_size": 128
+    }
+  }
+}

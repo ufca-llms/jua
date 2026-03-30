@@ -1,0 +1,24 @@
+{
+  "model": "sbert//home/jovyan/work/output/v4-20260327-210152/checkpoint-800-merged",
+  "kind": "retrieval",
+  "meta": {
+    "name": "jua-800",
+    "provider": "local",
+    "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 800",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "languages": [
+      "pt"
+    ],
+    "extra": {
+      "batch_size": 64
+    }
+  }
+}

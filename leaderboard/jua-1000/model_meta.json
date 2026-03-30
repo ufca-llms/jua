@@ -1,0 +1,24 @@
+{
+  "model": "sbert//home/jovyan/work/output/v4-20260327-210152/checkpoint-1000-merged",
+  "kind": "retrieval",
+  "meta": {
+    "name": "jua-1000",
+    "provider": "local",
+    "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 1000",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "languages": [
+      "pt"
+    ],
+    "extra": {
+      "batch_size": 64
+    }
+  }
+}

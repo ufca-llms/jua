@@ -43,5 +43,14 @@
     "corpus_file": "corpus.jsonl",
     "queries_file": "queries.jsonl",
     "qrels_file": "qrels/test.jsonl"
+  },
+  {
+    "id": "quati",
+    "name": "QuatiRetrieval",
+    "source": "hf",
+    "hf_id": "ufca-llms/quati",
+    "corpus_file": "corpus.jsonl",
+    "queries_file": "queries.jsonl",
+    "qrels_file": "qrels/test.jsonl"
   }
 ]

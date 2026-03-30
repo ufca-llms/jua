@@ -303,5 +303,125 @@
         "text"
       ]
     }
+  },
+  {
+    "id": "jua-600",
+    "adapter": "sbert",
+    "model_name": "/home/jovyan/work/output/v4-20260327-210152/checkpoint-600-merged",
+    "batch_size": 128,
+    "meta": {
+      "name": "jua-600",
+      "provider": "local",
+      "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 600",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "languages": [
+        "pt"
+      ]
+    }
+  },
+  {
+    "id": "jua-700",
+    "adapter": "sbert",
+    "model_name": "/home/jovyan/work/output/v4-20260327-210152/checkpoint-700-merged",
+    "batch_size": 128,
+    "meta": {
+      "name": "jua-700",
+      "provider": "local",
+      "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 700",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "languages": [
+        "pt"
+      ]
+    }
+  },
+  {
+    "id": "jua-800",
+    "adapter": "sbert",
+    "model_name": "/home/jovyan/work/output/v4-20260327-210152/checkpoint-800-merged",
+    "batch_size": 128,
+    "meta": {
+      "name": "jua-800",
+      "provider": "local",
+      "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 800",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "languages": [
+        "pt"
+      ]
+    }
+  },
+  {
+    "id": "jua-900",
+    "adapter": "sbert",
+    "model_name": "/home/jovyan/work/output/v4-20260327-210152/checkpoint-900-merged",
+    "batch_size": 128,
+    "meta": {
+      "name": "jua-900",
+      "provider": "local",
+      "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 900",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "languages": [
+        "pt"
+      ]
+    }
+  },
+  {
+    "id": "jua-1000",
+    "adapter": "sbert",
+    "model_name": "/home/jovyan/work/output/v4-20260327-210152/checkpoint-1000-merged",
+    "batch_size": 128,
+    "meta": {
+      "name": "jua-1000",
+      "provider": "local",
+      "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 1000",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "languages": [
+        "pt"
+      ]
+    }
+  },
+  {
+    "id": "jua-1027",
+    "adapter": "sbert",
+    "model_name": "/home/jovyan/work/output/v4-20260327-210152/checkpoint-1027-merged",
+    "batch_size": 128,
+    "meta": {
+      "name": "jua-1027",
+      "provider": "local",
+      "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 1027",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "languages": [
+        "pt"
+      ]
+    }
   }
 ]
