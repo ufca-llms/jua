@@ -56,6 +56,7 @@ def get_model(model_id: str, **kwargs):
         model = SbertModel(
             entry["model_name"],
             batch_size=kwargs.get("batch_size", entry.get("batch_size", 128)),
+            max_length=kwargs.get("max_length", entry.get("max_length", 3072)),
             devices=kwargs.get("devices") or entry.get("devices"),
         )
     elif adapter == "openai":

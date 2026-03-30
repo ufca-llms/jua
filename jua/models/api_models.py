@@ -42,7 +42,7 @@ def _metrics_bundle(retriever: EvaluateRetrieval, qrels, results) -> Dict[str, A
 
 
 class SbertModel(BaseModel):
-    def __init__(self, model_name: str, batch_size: int = 128, devices: list[str] | None = None):
+    def __init__(self, model_name: str, batch_size: int = 128, max_length: int = 3072, devices: list[str] | None = None):
         super().__init__(
             name=f"sbert/{model_name}",
             kind="retrieval",
@@ -53,17 +53,18 @@ class SbertModel(BaseModel):
                 model_type=["dense-retrieval"],
                 modalities=["text"],
                 description="SentenceTransformer embeddings.",
-                extra={"batch_size": batch_size},
+                extra={"batch_size": batch_size, "max_length": max_length},
             ),
         )
         self.model_name = model_name
         self.batch_size = batch_size
+        self.max_length = max_length
         self.devices = devices or []
 
     def evaluate(self, corpus, queries, qrels, dataset_name: str, **kwargs) -> ModelResult:
         dense_model = MultiDeviceSentenceBERT(
             self.model_name,
-            max_length=3072,
+            max_length=self.max_length,
             devices=self.devices,
         )
         model = DRES(dense_model, batch_size=self.batch_size)
@@ -73,6 +74,7 @@ class SbertModel(BaseModel):
         print(f"[sbert] Encoding corpus for dataset: {dataset_name}")
         print(f"[sbert] Encoding queries for dataset: {dataset_name}")
         print(f"[sbert] Embeddings dir: {embeddings_dir}")
+        print(f"[sbert] Max length: {self.max_length}")
         if self.devices:
             print(f"[sbert] Devices: {', '.join(self.devices)}")
         # Optionally filter queries to only those present in qrels

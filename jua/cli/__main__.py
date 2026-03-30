@@ -27,6 +27,7 @@ def main():
     run_parser.add_argument("--overall_metric", default=None, help="Overall metric (e.g. ndcg@10, mrr@10, map@10)")
 
     run_parser.add_argument("--batch_size", type=int, default=128, help="Batch size")
+    run_parser.add_argument("--max_length", type=int, default=3072, help="Max sequence length for local/SBERT embedding models")
     run_parser.add_argument("--max_tokens", type=int, default=3000, help="Max tokens for embeddings")
     run_parser.add_argument("--server_url", default="http://127.0.0.1:8000", help="Anserini server URL")
     run_parser.add_argument("--index_name", default=None, help="Anserini index name")
@@ -62,6 +63,7 @@ def main():
     model = jua.get_model(
         args.model,
         batch_size=args.batch_size,
+        max_length=args.max_length,
         max_tokens=args.max_tokens,
         server_url=args.server_url,
         index_name=args.index_name,
