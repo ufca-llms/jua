@@ -259,6 +259,10 @@ def main():
             "with a focus on legal documents and regulations. "
         )
         gr.Markdown(
+            "Paper: "
+            "[JUÁ: An Information Retrieval Corpus of Public Audit Court Rulings](https://arxiv.org/abs/2604.06098)"
+        )
+        gr.Markdown(
             "Add your contribution: "
             "[model](https://github.com/ufca-llms/jua/blob/main/docs/models.md) | "
             "[benchmark](https://github.com/ufca-llms/jua/blob/main/docs/datasets.md) | "

@@ -1,6 +1,9 @@
 # jua
 JUÁ — An Information Retrieval Corpus of Public Audit Court Rulings
 
+## Paper
+[JUÁ: An Information Retrieval Corpus of Public Audit Court Rulings](https://arxiv.org/abs/2604.06098)
+
 ## Quick Start
 ### Dataset generation
 ```
