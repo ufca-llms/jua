@@ -1,6 +1,23 @@
 # jua
 JUÁ — An Information Retrieval Corpus of Public Audit Court Rulings
 
+## Paper
+[JUÁ -- A Benchmark for Information Retrieval in Brazilian Legal Text Collections](https://arxiv.org/abs/2604.06098)
+
+If you use this repository, please cite:
+
+```bibtex
+@misc{pereira2026juabenchmarkinformation,
+  title={JU\'A -- A Benchmark for Information Retrieval in Brazilian Legal Text Collections},
+  author={Jayr Pereira and Leandro Fernandes and Erick de Brito and Roberto Lotufo and Luiz Bonifacio},
+  year={2026},
+  eprint={2604.06098},
+  archivePrefix={arXiv},
+  primaryClass={cs.IR},
+  url={https://arxiv.org/abs/2604.06098},
+}
+```
+
 ## Quick Start
 ### Dataset generation
 ```

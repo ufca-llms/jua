@@ -295,6 +295,23 @@ def main():
         kind_filter.change(_refresh, inputs=[benchmark, order_metric, kind_filter], outputs=[links_md, table])
 
         gr.Markdown("---")
+        gr.Markdown(
+            "If you use JUÁ, please cite "
+            "[JUÁ -- A Benchmark for Information Retrieval in Brazilian Legal Text Collections](https://arxiv.org/abs/2604.06098):\n\n"
+            "```bibtex\n"
+            "@misc{pereira2026juabenchmarkinformation,\n"
+            "  title={JU\\'A -- A Benchmark for Information Retrieval in Brazilian Legal Text Collections},\n"
+            "  author={Jayr Pereira and Leandro Fernandes and Erick de Brito and Roberto Lotufo and Luiz Bonifacio},\n"
+            "  year={2026},\n"
+            "  eprint={2604.06098},\n"
+            "  archivePrefix={arXiv},\n"
+            "  primaryClass={cs.IR},\n"
+            "  url={https://arxiv.org/abs/2604.06098},\n"
+            "}\n"
+            "```"
+        )
+
+        gr.Markdown("---")
 
         logo_html = []
         brasao_uri = _img_to_data_uri(UFCA_BRASAO)
