@@ -3,6 +3,7 @@
   "kind": "rerank",
   "meta": {
     "name": "text-embedding-3-small (rerank)",
+    "short_name": "OpenAI-3-small-rerank",
     "provider": "OpenAI",
     "description": "Dense reranking over BM25 results using precomputed OpenAI embeddings",
     "url": "https://platform.openai.com/docs/guides/embeddings",

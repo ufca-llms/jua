@@ -3,6 +3,7 @@
   "kind": "retrieval",
   "meta": {
     "name": "tencent/KaLM-Embedding-Gemma3-12B-2511",
+    "short_name": "KaLM-Gemma3-12B",
     "provider": "Tencent",
     "description": "KaLM Embedding Gemma3 12B (2511) embeddings",
     "url": "https://huggingface.co/tencent/KaLM-Embedding-Gemma3-12B-2511",

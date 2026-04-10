@@ -3,6 +3,7 @@
   "kind": "retrieval",
   "meta": {
     "name": "bm25/anserini",
+    "short_name": "BM25",
     "provider": "anserini",
     "description": "BM25 via Anserini (pyserini-fastapi).",
     "modalities": [

@@ -3,6 +3,7 @@
   "kind": "rerank",
   "meta": {
     "name": "Qwen/Qwen3-Embedding-4B (rerank)",
+    "short_name": "Qwen3-4B-rerank",
     "provider": "Qwen",
     "description": "Dense reranking over BM25 results using precomputed Qwen3-Embedding-4B embeddings",
     "url": "https://huggingface.co/Qwen/Qwen3-Embedding-4B",

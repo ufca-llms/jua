@@ -4,6 +4,7 @@ import base64
 import json
 import os
 import html
+import re
 from typing import Any, Dict, List, Tuple
 
 import gradio as gr
@@ -145,8 +146,12 @@ def _pivot(rows: List[Dict[str, Any]], benchmarks: List[str]) -> List[Dict[str, 
     for r in rows:
         model_id = r["model_id"]
         model_name = r["model"]
+        model_short_name = r.get("model_short_name")
         model_url = r.get("model_url")
-        by_model.setdefault(model_id, {"model": model_name, "model_url": model_url})
+        by_model.setdefault(
+            model_id,
+            {"model": model_name, "model_short_name": model_short_name, "model_url": model_url},
+        )
         by_model[model_id][r["benchmark"]] = r.get("ndcg@10")
 
     pivot = []
@@ -160,13 +165,22 @@ def _pivot(rows: List[Dict[str, Any]], benchmarks: List[str]) -> List[Dict[str, 
 
 
 def _get_column_widths(df: pd.DataFrame) -> list[str]:
+    def _display_text(value: Any) -> str:
+        text = str(value)
+        # Dataframe cells may be markdown links like [label](url).
+        # Width should consider only the visible label.
+        match = re.fullmatch(r"\[([^\]]+)\]\([^)]+\)", text)
+        if match:
+            return match.group(1)
+        return text
+
     widths = []
     for column_name in df.columns:
         column_word_lengths = [len(word) for word in str(column_name).split()]
         if is_numeric_dtype(df[column_name]):
             value_lengths = [len(f"{value:.2f}") for value in df[column_name]]
         else:
-            value_lengths = [len(str(value)) for value in df[column_name]]
+            value_lengths = [len(_display_text(value)) for value in df[column_name]]
         max_length = max(max(column_word_lengths), max(value_lengths))
         n_pixels = 25 + (max_length * 10)
         widths.append(f"{n_pixels}px")
@@ -223,11 +237,8 @@ def _build_table_component(bmks: List[str], metric: str, kind: str) -> gr.DataFr
     styled = df.style.format({col: "{:.4f}" for col in numeric_cols}).background_gradient(
         cmap=cmap, subset=numeric_cols
     )
-    column_widths = _get_column_widths(df)
-    if len(column_widths) > 0:
-        column_widths[0] = "80px"
-    if len(column_widths) > 1:
-        column_widths[1] = "220px"
+    # Keep fixed widths to avoid Gradio/HF autosize expanding the model column.
+    column_widths = ["80px", "220px"] + ["120px"] * max(0, len(df.columns) - 2)
 
     return gr.DataFrame(
         styled,

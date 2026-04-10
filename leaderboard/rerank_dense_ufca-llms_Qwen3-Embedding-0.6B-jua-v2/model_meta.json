@@ -3,6 +3,7 @@
   "kind": "rerank",
   "meta": {
     "name": "ufca-llms/Qwen3-Embedding-0.6B-jua-v2 (rerank)",
+    "short_name": "Qwen3-0.6B-jua-v2-rerank",
     "provider": "ufca-llms",
     "description": "Dense reranking over BM25 results using precomputed JUA-v2 embeddings",
     "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-0.6B-jua-v2",

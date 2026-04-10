@@ -3,6 +3,7 @@
   "kind": "retrieval",
   "meta": {
     "name": "text-embedding-3-small",
+    "short_name": "OpenAI-3-small",
     "provider": "OpenAI",
     "description": "OpenAI embeddings",
     "url": "https://platform.openai.com/docs/guides/embeddings",

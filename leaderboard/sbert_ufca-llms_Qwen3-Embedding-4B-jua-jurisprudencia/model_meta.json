@@ -3,6 +3,7 @@
   "kind": "retrieval",
   "meta": {
     "name": "ufca-llms/Qwen3-Embedding-4B-jua-jurisprudencia",
+    "short_name": "Qwen3-4B-jua-juris",
     "provider": "ufca-llms",
     "description": "Qwen3 Embedding 4B fine-tuned on JUÁ jurisprudência",
     "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-4B-jua-jurisprudencia",

@@ -3,6 +3,7 @@
   "kind": "retrieval",
   "meta": {
     "name": "Qwen/Qwen3-Embedding-4B",
+    "short_name": "Qwen3-4B",
     "provider": "Qwen",
     "description": "Qwen3 Embedding 4B",
     "url": "https://huggingface.co/Qwen/Qwen3-Embedding-4B",

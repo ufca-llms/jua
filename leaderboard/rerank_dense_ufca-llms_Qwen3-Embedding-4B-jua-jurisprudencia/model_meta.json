@@ -3,6 +3,7 @@
   "kind": "rerank",
   "meta": {
     "name": "ufca-llms/Qwen3-Embedding-4B-jua-jurisprudencia (rerank)",
+    "short_name": "Qwen3-4B-jua-juris-rerank",
     "provider": "ufca-llms",
     "description": "Dense reranking over BM25 results using precomputed Qwen3-Embedding-4B-jua-jurisprudencia embeddings",
     "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-4B-jua-jurisprudencia",
