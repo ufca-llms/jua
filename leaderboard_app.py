@@ -20,6 +20,31 @@ ASSETS_DIR = os.environ.get("JUA_ASSETS_DIR", "assets")
 UFCA_BRASAO = os.path.join(ASSETS_DIR, "ufca-brasao.png")
 UFCA_LLMS_LOGO = os.path.join(ASSETS_DIR, "ufca-llms.png")
 
+TABLE_CSS = """
+#ranking_table table {
+  table-layout: fixed !important;
+  width: 100% !important;
+}
+#ranking_table th:nth-child(1),
+#ranking_table td:nth-child(1) {
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+}
+#ranking_table th:nth-child(2),
+#ranking_table td:nth-child(2) {
+  width: 220px !important;
+  min-width: 220px !important;
+  max-width: 220px !important;
+}
+#ranking_table td:nth-child(2) a {
+  display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+"""
+
 
 def _safe_listdir(path: str) -> List[str]:
     try:
@@ -246,6 +271,7 @@ def _build_table_component(bmks: List[str], metric: str, kind: str) -> gr.DataFr
         interactive=False,
         pinned_columns=2,
         column_widths=column_widths,
+        elem_id="ranking_table",
     )
 
 
@@ -265,7 +291,7 @@ def _benchmark_links_md(selected_benchmarks: List[str]) -> str:
 
 
 def main():
-    with gr.Blocks(title="JUÁ Leaderboard") as demo:
+    with gr.Blocks(title="JUÁ Leaderboard", css=TABLE_CSS) as demo:
         gr.Markdown("# JUÁ Leaderboard")
         gr.Markdown(
             "This is a public benchmark for evaluating retrieval models in Portuguese, "
