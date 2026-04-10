@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 
 _ALLOWED_FIELDS = {
     "name",
+    "short_name",
     "provider",
     "description",
     "url",
@@ -38,6 +39,7 @@ def _validate_keys(data: Dict[str, Any]) -> None:
 @dataclass
 class ModelMeta:
     name: Optional[str] = None
+    short_name: Optional[str] = None
     provider: Optional[str] = None
     description: Optional[str] = None
     url: Optional[str] = None

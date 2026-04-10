@@ -4,7 +4,6 @@ import base64
 import json
 import os
 import html
-import re
 from typing import Any, Dict, List, Tuple
 
 import gradio as gr
@@ -88,6 +87,7 @@ def _collect_results(results_dir: str) -> List[Dict[str, Any]]:
         meta_path = os.path.join(model_path, "model_meta.json")
         meta = _load_json(meta_path) if os.path.exists(meta_path) else {}
         model_name = meta.get("meta", {}).get("name") or meta.get("model") or model_dir
+        model_short_name = meta.get("meta", {}).get("short_name")
         model_url = meta.get("meta", {}).get("url")
         model_kind = meta.get("kind")
         if not model_kind:
@@ -114,6 +114,7 @@ def _collect_results(results_dir: str) -> List[Dict[str, Any]]:
                 {
                     "model_id": model_dir,
                     "model": model_name,
+                    "model_short_name": model_short_name,
                     "model_url": model_url,
                     "benchmark": task_name,
                     "ndcg@10": ndcg10,
@@ -159,20 +160,13 @@ def _pivot(rows: List[Dict[str, Any]], benchmarks: List[str]) -> List[Dict[str, 
 
 
 def _get_column_widths(df: pd.DataFrame) -> list[str]:
-    def _display_text(value: Any) -> str:
-        text = str(value)
-        match = re.fullmatch(r"\[([^\]]+)\]\([^)]+\)", text)
-        if match:
-            return match.group(1)
-        return text
-
     widths = []
     for column_name in df.columns:
         column_word_lengths = [len(word) for word in str(column_name).split()]
         if is_numeric_dtype(df[column_name]):
             value_lengths = [len(f"{value:.2f}") for value in df[column_name]]
         else:
-            value_lengths = [len(_display_text(value)) for value in df[column_name]]
+            value_lengths = [len(str(value)) for value in df[column_name]]
         max_length = max(max(column_word_lengths), max(value_lengths))
         n_pixels = 25 + (max_length * 10)
         widths.append(f"{n_pixels}px")
@@ -185,8 +179,6 @@ def _create_light_green_cmap():
     half_colors = np.linspace(0, 0.5, num_colors)
     half_cmap = [cmap(val) for val in half_colors]
     return LinearSegmentedColormap.from_list("LightGreens", half_cmap, N=256)
-
-
 def build_table_df(selected_benchmarks: List[str], order_metric: str, kind_filter: str) -> Tuple[pd.DataFrame, List[str]]:
     rows = _collect_results(RESULTS_DIR)
     if kind_filter != "all":
@@ -203,11 +195,13 @@ def build_table_df(selected_benchmarks: List[str], order_metric: str, kind_filte
     rows_out = []
     for idx, r in enumerate(pivot, start=1):
         model_name = r.get("model", "")
+        model_short_name = r.get("model_short_name")
         model_url = r.get("model_url")
+        display_name = model_short_name or model_name
         if model_url:
-            model_cell = f"[{model_name}]({model_url})"
+            model_cell = f"[{display_name}]({model_url})"
         else:
-            model_cell = model_name
+            model_cell = display_name
         row = [idx, model_cell]
         row.extend([r.get(b) for b in benchmarks])
         row.append(r.get("overall"))
@@ -233,7 +227,7 @@ def _build_table_component(bmks: List[str], metric: str, kind: str) -> gr.DataFr
     if len(column_widths) > 0:
         column_widths[0] = "80px"
     if len(column_widths) > 1:
-        column_widths[1] = "240px"
+        column_widths[1] = "220px"
 
     return gr.DataFrame(
         styled,

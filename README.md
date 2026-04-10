@@ -93,7 +93,7 @@ python -m jua.cli list-datasets
 ```
 
 The metadata file must match the `ModelMeta` schema (modeled after MTEB). Allowed fields:
-`name`, `provider`, `description`, `url`, `authors`, `license`, `framework`, `modalities`,
+`name`, `short_name`, `provider`, `description`, `url`, `authors`, `license`, `framework`, `modalities`,
 `model_type`, `similarity_fn_name`, `max_tokens`, `embed_dim`, `n_parameters`,
 `open_weights`, `training_data`, `training_code`, `reference`, `release_date`,
 `languages`, `contacts`, `extra`.

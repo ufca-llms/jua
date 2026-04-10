@@ -18,6 +18,7 @@ If you want other people to be able to evaluate the model through this repositor
   "batch_size": 128,
   "meta": {
     "name": "Qwen/Qwen3-Embedding-0.6B",
+    "short_name": "Qwen3-0.6B",
     "provider": "Qwen",
     "url": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B",
     "description": "Qwen3 Embedding 0.6B",
@@ -63,3 +64,19 @@ At minimum, the model metadata should make it clear:
 - where it comes from
 - whether it is a retrieval model or reranker
 - where others can find it again (for example, a Hugging Face URL)
+
+## Optional leaderboard display name
+If the full model name is too long for the leaderboard table, you can provide a shorter display label with `meta.short_name`.
+
+Example:
+```json
+{
+  "meta": {
+    "name": "ufca-llms/Qwen3-Embedding-4B-jua-jurisprudencia",
+    "short_name": "Qwen3-4B-jua-juris",
+    "url": "https://huggingface.co/ufca-llms/Qwen3-Embedding-4B-jua-jurisprudencia"
+  }
+}
+```
+
+The leaderboard will use `short_name` in the table when present, while keeping `name` as the canonical model identifier in metadata.
