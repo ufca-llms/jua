@@ -21,9 +21,17 @@ UFCA_BRASAO = os.path.join(ASSETS_DIR, "ufca-brasao.png")
 UFCA_LLMS_LOGO = os.path.join(ASSETS_DIR, "ufca-llms.png")
 
 TABLE_CSS = """
+#ranking_table,
+#ranking_table > div,
+#ranking_table .wrap,
+#ranking_table .table-wrap,
+#ranking_table .table-container {
+  overflow-x: auto !important;
+}
 #ranking_table table {
   table-layout: fixed !important;
   width: 100% !important;
+  min-width: 980px !important;
 }
 #ranking_table th:nth-child(1),
 #ranking_table td:nth-child(1) {
