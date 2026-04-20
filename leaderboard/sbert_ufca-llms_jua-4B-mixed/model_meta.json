@@ -1,0 +1,23 @@
+{
+  "model": "sbert/ufca-llms/jua-4B-mixed",
+  "kind": "retrieval",
+  "meta": {
+    "name": "jua-4B-mixed",
+    "short_name": "jua-4B-mixed",
+    "provider": "ufca-llms",
+    "description": "Qwen3 Embedding 4B fine-tuned on mixed data",
+    "url": "https://huggingface.co/ufca-llms/jua-4B-mixed",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "languages": [
+      "pt"
+    ]
+  }
+}

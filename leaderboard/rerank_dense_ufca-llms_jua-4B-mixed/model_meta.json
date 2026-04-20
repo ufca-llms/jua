@@ -1,0 +1,17 @@
+{
+  "model": "rerank/dense/ufca-llms/jua-4B-mixed",
+  "kind": "rerank",
+  "meta": {
+    "name": "jua-4B-mixed (rerank)",
+    "short_name": "jua-4B-mixed (rerank)",
+    "provider": "ufca-llms",
+    "description": "Dense reranking over BM25 results using precomputed jua-4B-mixed embeddings",
+    "url": "https://huggingface.co/ufca-llms/jua-4B-mixed",
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "reranker"
+    ]
+  }
+}
