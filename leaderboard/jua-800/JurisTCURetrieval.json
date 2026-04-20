@@ -1,5 +1,5 @@
 {
-  "model": "sbert//home/jovyan/work/output/v4-20260327-210152/checkpoint-800-merged",
+  "model": "sbert/ufca-llms/jua-4B-legal-only",
   "task": "JurisTCURetrieval",
   "metrics": {
     "ndcg": {

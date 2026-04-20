@@ -1,8 +1,8 @@
 {
-  "model": "sbert//home/jovyan/work/output/v4-20260327-210152/checkpoint-800-merged",
+  "model": "sbert/ufca-llms/jua-4B-legal-only",
   "kind": "retrieval",
   "meta": {
-    "name": "jua-800",
+    "name": "ufca-llms/jua-4B-legal-only",
     "provider": "local",
     "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 800",
     "framework": [
@@ -19,6 +19,8 @@
     ],
     "extra": {
       "batch_size": 64
-    }
+    },
+    "short_name": "jua-4B-legal-only",
+    "url": "https://huggingface.co/ufca-llms/jua-4B-legal-only"
   }
 }
