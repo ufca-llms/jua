@@ -1,0 +1,26 @@
+{
+  "model": "sbert/ufca-llms/jua-4B-legal-only",
+  "kind": "retrieval",
+  "meta": {
+    "name": "ufca-llms/jua-4B-legal-only",
+    "provider": "local",
+    "description": "Local Qwen3-Embedding-4B fine-tuning checkpoint 800",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "languages": [
+      "pt"
+    ],
+    "extra": {
+      "batch_size": 64
+    },
+    "short_name": "jua-4B-legal-only",
+    "url": "https://huggingface.co/ufca-llms/jua-4B-legal-only"
+  }
+}
