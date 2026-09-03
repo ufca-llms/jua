@@ -56,8 +56,14 @@ class TrainDataset:
             tuple: corpus, queries, and qrels.
         """
         corpus_path = os.path.join(self.dataset_path, "corpus.jsonl")
-        query_path = os.path.join(self.dataset_path, "queries_with_questions_new.jsonl")
-        qrels_path = os.path.join(self.dataset_path,'qrels', "train.tsv")
+        query_path = os.path.join(self.dataset_path, "queries.jsonl")
+
+        #qrels_path = os.path.join(self.dataset_path, 'qrels', "test.tsv")
+        #if not os.path.exists(qrels_path):
+            #qrels_path = os.path.join(self.dataset_path, 'qrels', "train.tsv")
+        
+        qrels_path = os.path.join(self.dataset_path, 'qrels', "train.tsv")
+
         print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
         corpus, queries, qrels = GenericDataLoader(
             corpus_file=corpus_path, 
@@ -67,6 +73,12 @@ class TrainDataset:
         return corpus, queries, qrels
 
     def create(self):
+
+        # Garante que o diretório de destino existe e limpa o arquivo antigo
+        os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
+        with open(self.output_path, 'w', encoding='utf-8') as f:
+            pass
+
         for k,v in tqdm(self.results.items()):
             gold_id = k[:-2]
             # skip impossible cases where gold_id is not in the top-1000 retrieved items

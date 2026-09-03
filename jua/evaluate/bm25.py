@@ -27,7 +27,7 @@ def _write_pyserini_jsonl(corpus: dict[str, dict[str, str]], dataset_path: str) 
 
 def _check_server(server_url: str) -> None:
     try:
-        requests.get(server_url, timeout=5)
+        requests.get(server_url, timeout=660)
     except requests.RequestException as exc:
         raise RuntimeError(
             "Anserini server is not reachable. Start it with:\n"
@@ -55,11 +55,11 @@ def evaluate_bm25(
     pyserini_jsonl = _write_pyserini_jsonl(corpus, dataset_path)
 
     with open(pyserini_jsonl, "rb") as f_in:
-        requests.post(f"{server_url}/upload/", files={"file": f_in}, verify=False, timeout=120)
+        requests.post(f"{server_url}/upload/", files={"file": f_in}, verify=False, timeout=600)
 
     if not index_name:
         index_name = f"beir/{dataset_name}"
-    requests.get(f"{server_url}/index/", params={"index_name": index_name}, timeout=120)
+    requests.get(f"{server_url}/index/", params={"index_name": index_name}, timeout=600)
 
     retriever = EvaluateRetrieval()
     _ensure_results_dir(results_file)
@@ -80,7 +80,7 @@ def evaluate_bm25(
         response = requests.post(
             f"{server_url}/lexical/batch_search/",
             json=payload,
-            timeout=120,
+            timeout=600,
         )
         response.raise_for_status()
         results.update(response.json()["results"])
@@ -92,8 +92,24 @@ def evaluate_bm25(
 
     json.dump(results, open(results_file, "w"))
 
-    ndcg, _map, recall, precision = retriever.evaluate(qrels, results, retriever.k_values, ignore_identical_ids=False)
-    mrr = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
+# Normalização dupla: trata tanto os IDs de Query quanto os IDs de Documento
+    formatted_results = {}      #(primeira correcao do gemini)
+    for qid, docs in results.items():
+        # 1. Garante o sufixo '-q' no ID da Query para bater com o qrels
+        formatted_qid = qid if qid.endswith("-q") else f"{qid}-q"
+        
+        # SÓ ADICIONA SE A QUERY EXISTIR NO QRELS QUE ESTÁ SENDO AVALIADO
+        if formatted_qid in qrels: #(terceira correcao do gemini aqui, pra evitar buscar no train queries do test)
+            clean_docs = {} #(segunda correcao do gemini)
+            for doc_id, score in docs.items():
+                clean_doc_id = doc_id[:-2] if doc_id.endswith("-q") else doc_id
+                clean_docs[clean_doc_id] = score
+                
+            formatted_results[formatted_qid] = clean_docs
+
+    # Cálculo das métricas apenas para as queries válidas do split atual
+    ndcg, _map, recall, precision = retriever.evaluate(qrels, formatted_results, retriever.k_values, ignore_identical_ids=False)
+    mrr = retriever.evaluate_custom(qrels, formatted_results, retriever.k_values, metric="mrr")
 
     print(f"NDCG: {ndcg}")
     print(f"_MAP: {_map}")
@@ -101,14 +117,22 @@ def evaluate_bm25(
     print(f"Precision: {precision}")
     print(f"MRR: {mrr}")
 
+    # Gravação dos arquivos finais formatados com suporte UTF-8
+    _ensure_results_dir(results_file)
+    with open(results_file, "w", encoding="utf-8") as f:
+        json.dump(formatted_results, f, ensure_ascii=False, indent=2)
+
     metrics_file = results_file.replace(".json", "_metrics.json")
-    json.dump(
-        {
-            "ndcg": ndcg,
-            "map": _map,
-            "recall": recall,
-            "precision": precision,
-            "mrr": mrr,
-        },
-        open(metrics_file, "w"),
-    )
+    with open(metrics_file, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "ndcg": ndcg,
+                "map": _map,
+                "recall": recall,
+                "precision": precision,
+                "mrr": mrr,
+            },
+            f,
+            ensure_ascii=False,
+            indent=2
+        )

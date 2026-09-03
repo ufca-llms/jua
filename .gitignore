@@ -217,3 +217,14 @@ wandb/
 dataset.zip
 .vscode/
 .DS_Store
+
+#Pastas de dados pesados e resultados
+BACKUP/
+data/
+jua-dataset/
+negativos_relacionados/resultados/
+results/
+
+#Pesados
+*.jsonl
+*.zip

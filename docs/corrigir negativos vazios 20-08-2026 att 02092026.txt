@@ -1,0 +1,116 @@
+https://sites.tcu.gov.br/dados-abertos/jurisprudencia/
+https://github.com/ufca-llms/jua/blob/main/docs/criando-dataset-treino-jua.md
+
+repositorio - em docs - ai tem um markdown com passo a passo para gerar aquele dataset
+dados abertos tcu, tem um csv com jurisprudencia selecionada
+ai eu baixo o arquivo e coloco na pasta com o raw
+
+ai rodar o que manda e vai gerar uma estrutura, com os ids de query e corpus
+
+ai tem que usar um buscador BM25, buscador lexico (pelo eslatic search, antes era pelo python ) e subir o servidor com docker
+
+descomentar ultimas 3 linhas do save_dataset em dataset.py
+colocar 0.5 como o "alpha" quando for rodar o docker, para pegar os 5% melhores, porque 1 estava deixando de pegar negativos em varios documentos
+
+listar todos atuais da forma antiga (a busca do professor foi a similaridade dos negativos sob o positivo), agora que vai ser buscar os top a partir da query vai resultar bem diferente, então testar primeiro com o percentil em 1 mesmo porque vai sair outros resultados. Como o BM25 tem a variavel k1 que é pra saturação, o score vai dando similar a medida que dados se repetem, então talvez por isso as vezes ficou sem negativo, porque não tinha um ranking de melhores ja q tudo era parecido demais. Talvez esses q estao sem negativos sejam bons ate pra matheus q ta testando se tem negativos inuteis (por ja ter outro melhor e parecido). Ai se a maquina nao demorar demais, rodar com 0.01 e depois com 0.05 (os dois na forma de busca nova) e ver se tem resultados melhores / mais docs com mais de 0 negativos (esperado é 100%, atual é de 85%, entao tem 4153 docs sem negativos)
+
+a partir do passo 7 não precisa mexer
+
+
+----------- rodando
+
+primeiro: 
+	pip install -r requirements.txt
+depois de colocar o csv na pasta data: (e descomentar os 2 with open linhas q salvam os resultados, pelo menos isso era necessario no commit 8da255542b01a66deafb30f6d9bb05043fb800c1)
+	python -m jua data/jurisprudencia-selecionada.csv jua-dataset
+ai renomear os tsv's pra tirar o "_"
+crio a pasta results
+
+pra rodar o docker na minha maquina lixo (em outro cmd):
+	docker run -p 8000:8000 -e JAVA_TOOL_OPTIONS="-Xms512m -Xmx3g" --memory=4g --memory-swap=4g -it beir/pyserini-fastapi
+
+agora de volta ao git bash (opcional) rodo:
+	python -m jua.evaluate bm25 --dataset_path ./jua-dataset --results_file results/anserini_bm25_hard.json --server_url http://127.0.0.1:8000 --chunk_size 100
+
+por algum motivo a funcao load_dataset em train_dataset.py faz isso: "query_path = os.path.join(self.dataset_path, "queries_with_questions_new.jsonl")". Entao tive que ir la onde descomentei os with open e trocar o nome do arquivo que salva as queries, que antes era apenas "queries.jsonl"
+
+Outra, na funcao create em train_dataset estava "gold_id = k[:-2]" mas o gemini disse que o arquivo lido nao tem o "_x" que esse -2 esta removendo, e estava tirando 2 digitos de graça. Ai troquei pra gold_id = k
+
+por fim (lembrar sempre de alterar o alpha de 0.01 para 0.05):
+	python -m jua.train --results_path results/anserini_bm25_hard.json --dataset_path ./jua-dataset --alpha 0.05
+
+Nao funciona, nao esta sendo gerado !!! Eu nao sei por que !!!!
+
+Pelo visto as queries estao saindo mesmo sem o id "X_q", preciso consertar isso em todo dataset...
+
+eu mudei la em save_dataset em dataset.py pra salvar os tsv sem o underline
+e mudei uma linha, agora esta assim: "queries = [{"_id": f"{query['KEY']}-q", "text": query["ENUNCIADO"]} for query in queries]", antes estava apenas ""_id": corpus["KEY"]" o que é errado. Como adicionei de volta isso, ajeitei de volta o gold_id pra k[:-2]
+tambem corrigi logo a geracao do nome da query de volta pra queries.jsonl, tirei o nome novo do _load_dataset em train_dataset.py e do save_dataset em dataset.py
+
+agora rerodar tudo pra testar:
+	no 3º comando jua.evaluate bm25 deu isso:
+
+  File "C:\Users\eripl\AppData\Local\Programs\Python\Python313\Lib\site-packages\beir\datasets\data_loader.py", line 63, in load_custom
+    self.queries = {qid: self.queries[qid] for qid in self.qrels}
+                         ~~~~~~~~~~~~^^^^^
+KeyError: 'JURISPRUDENCIA-SELECIONADA-34318'
+
+
+Agora, dessa vez eu fui de novo lá em dataset.py depois save_dataset e inves de ""query_id": self.__df_train["KEY"]," agora esta ""query_id": self.__df_train["KEY"].apply(lambda x: f"{x}-q")," tanto no train_qrels quanto no test_qrels
+
+em evaluate_bm25, adicionei um tratamento chamado formatted_results, e todas as metricas usam ele agora. Tambem salvo o arquivo final com esses formated results.
+
+O formatted_results sozinho não serviu, adicionei o formatted_qid e clean_docs (gemini fez, tratamento 2). As metricas começaram a aparecer. o arquivo bm25_metrics deu resultado.
+
+Rodei o ultimo comando e: Não. Tentei criar o arquivo caso estivesse dando só um appendo sem um write, tbm não. Pedi ajuda novamente ao Gemini ele falou q talvez pudesse ser o test.tsv nao e encontrado, ai se for o caso busca o train.csv. Além disso, um tratamento antes da função create (train_dataset.py) rodar q checa a pasta de saída e cria lá o arquivo tbm. Ai finalmente funcionou.
+
+Estou upando a geracao em https://drive.google.com/file/d/13nIVCFDIxfj_62--FWeIRFlLsSaSKs3f/view?usp=sharing
+gdown 13nIVCFDIxfj_62--FWeIRFlLsSaSKs3f
+
+eu não sei qual a diferença no codigo exatamente, mais Jayr mudou a busca de negativos baseado no positivo para baseado na query. Então depois rodar de novo com 0.01.
+
+ISSO Q EU RODEI FOI SÓ O TEST.TSV, E SO GEROU RESULTADOS EM 1700 QUERIES
+Nova geração do Jua (test.tsv com 1,738 queries) - Alpha 0.01: 4,490 negativos (media de 2.58 negs por consulta) e 224 docs sem negativos - Alpha 0.05: 9,038 negativos (media de 5.20 negs por consulta) e 50 docs sem negativos
+
+agora aquela alteração que eu fiz pra ler o train se não achasse o test.. não serve mais. Pra rodar na base toda eu só comentei esse tratamento e pedi q o qrels_file fosse apenas o train.tsv. Mas estranho, pq roda só 17,543 queries agora, e a geração anterior tinha 27,690 queries no dataset pronto. Pq será q esse train é menor? O csv mudou?
+
+Mesma coisa no main do evaluate, que na função load dataset qreçs_file lia test e agora lê train.
+Deu timeout, fui no bm25.py do evaluate e coloquei todos os timeout como 600 (inves de 120).
+
+comando novo pro docker (faltou memoria):
+	docker run -p 8000:8000 -e JAVA_TOOL_OPTIONS="-Xms512m -Xmx3500m" --memory=4g -it beir/pyserini-fastapi
+
+comando novo pro evaluate (diminuir o chunk):
+	python -m jua.evaluate bm25 --dataset_path ./jua-dataset --results_file results/anserini_bm25_hard.json --server_url http://127.0.0.1:8000 --chunk_size 20
+
+precisei mudar outra coisa no evaluate_bm25 do bm25.py: "if formatted_qid in qrels:" antes de gerar a lista de clean docs, se não ele tenta ler entre o gerado a partir do train, ids que só existem no test.
+
+
+
+-------------------- era pra acontecer isso?
+jua-dataset\qrels\test.tsv
+100%|##########| 17543/17543 [00:00<00:00, 23454.63it/s]
+0 queries already retrieved, resuming from there...
+100%|##########| 18/18 [06:11<00:00, 20.66s/it]
+NDCG: {'NDCG@1': 0.0, 'NDCG@3': 0.0, 'NDCG@5': 0.0, 'NDCG@10': 0.0, 'NDCG@100': 0.0, 'NDCG@1000': 0.0}
+_MAP: {'MAP@1': 0.0, 'MAP@3': 0.0, 'MAP@5': 0.0, 'MAP@10': 0.0, 'MAP@100': 0.0, 'MAP@1000': 0.0}
+Recall: {'Recall@1': 0.0, 'Recall@3': 0.0, 'Recall@5': 0.0, 'Recall@10': 0.0, 'Recall@100': 0.0, 'Recall@1000': 0.0}
+Precision: {'P@1': 0.0, 'P@3': 0.0, 'P@5': 0.0, 'P@10': 0.0, 'P@100': 0.0, 'P@1000': 0.0}
+MRR: {'MRR@1': 0.0, 'MRR@3': 0.0, 'MRR@5': 0.0, 'MRR@10': 0.0, 'MRR@100': 0.0, 'MRR@1000': 0.0}
+
+
+---------------------- outros resultados
+$ ls -lh results/anserini_bm25_hard.json
+-rw-r--r-- 1 eripl 197609 94M Aug 21 00:26 results/anserini_bm25_hard.json
+
+$ ls -lh results/anserini_bm25_hard_metrics.json
+-rw-r--r-- 1 eripl 197609 517 Aug 21 00:26 results/anserini_bm25_hard_metrics.json
+
+$ head -n 5 jua-dataset/qrels/train.tsv
+query_id        corpus_id       relevance
+JURISPRUDENCIA-SELECIONADA-31370        JURISPRUDENCIA-SELECIONADA-31370       1
+
+eripl@ericknote MINGW64 ~/OneDrive/Área de Trabalho/LLM/treino pares/jua dataset gerar novamente/jua (main)
+$ head -n 5 jua-dataset/qrels/test.tsv
+query-id        corpus-id       score
+JURISPRUDENCIA-SELECIONADA-34318        JURISPRUDENCIA-SELECIONADA-34318       1
