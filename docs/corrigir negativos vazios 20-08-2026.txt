@@ -85,6 +85,7 @@ comando novo pro evaluate (diminuir o chunk):
 
 precisei mudar outra coisa no evaluate_bm25 do bm25.py: "if formatted_qid in qrels:" antes de gerar a lista de clean docs, se não ele tenta ler entre o gerado a partir do train, ids que só existem no test.
 
+Fiz um relatório e descobri que as perdas no passo 4 eram de exatamente 10% do total, 14034. O professor disse que é porque quando o BM25 roda sobre apenas o train (que é só 90%) ele tira mais 10%. Então o gemini fez num instante um script pra gerar um all.tsv, e todo lugar que lia as qrels pelo train.tsv eu substitui pelo all.
 
 
 -------------------- era pra acontecer isso?

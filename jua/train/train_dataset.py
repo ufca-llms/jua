@@ -62,7 +62,8 @@ class TrainDataset:
         #if not os.path.exists(qrels_path):
             #qrels_path = os.path.join(self.dataset_path, 'qrels', "train.tsv")
         
-        qrels_path = os.path.join(self.dataset_path, 'qrels', "train.tsv")
+        #qrels_path = os.path.join(self.dataset_path, 'qrels', "train.tsv")
+        qrels_path = os.path.join(self.dataset_path, 'qrels', "all.tsv")
 
         print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
         corpus, queries, qrels = GenericDataLoader(

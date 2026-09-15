@@ -60,7 +60,8 @@ def load_dataset(dataset_path: str):
     corpus_path = os.path.join(dataset_path, "corpus.jsonl")
     query_path = os.path.join(dataset_path, "queries.jsonl")
     #qrels_path = os.path.join(dataset_path,'qrels', "test.tsv")
-    qrels_path = os.path.join(dataset_path,'qrels', "train.tsv")
+    #qrels_path = os.path.join(dataset_path,'qrels', "train.tsv")
+    qrels_path = os.path.join(dataset_path,'qrels', "all.tsv")
     print(f"Loading dataset from {corpus_path}, {query_path}, {qrels_path}")
     corpus, queries, qrels = GenericDataLoader(
         corpus_file=corpus_path, 
