@@ -28,23 +28,6 @@ TABLE_CSS = """
 #ranking_table .table-container {
   overflow-x: auto !important;
 }
-#ranking_table table {
-  table-layout: fixed !important;
-  width: 100% !important;
-  min-width: 980px !important;
-}
-#ranking_table th:nth-child(1),
-#ranking_table td:nth-child(1) {
-  width: 80px !important;
-  min-width: 80px !important;
-  max-width: 80px !important;
-}
-#ranking_table th:nth-child(2),
-#ranking_table td:nth-child(2) {
-  width: 220px !important;
-  min-width: 220px !important;
-  max-width: 220px !important;
-}
 #ranking_table td:nth-child(2) a {
   display: block !important;
   white-space: nowrap !important;
@@ -270,14 +253,14 @@ def _build_table_component(bmks: List[str], metric: str, kind: str) -> gr.DataFr
     styled = df.style.format({col: "{:.4f}" for col in numeric_cols}).background_gradient(
         cmap=cmap, subset=numeric_cols
     )
-    # Keep fixed widths to avoid Gradio/HF autosize expanding the model column.
-    column_widths = ["80px", "220px"] + ["120px"] * max(0, len(df.columns) - 2)
+    # Avoid pinned columns here: hosted Gradio can render pinned panes with
+    # separate table widths, which desynchronizes headers and styled cells.
+    column_widths = ["80px", "260px"] + ["145px"] * max(0, len(df.columns) - 2)
 
     return gr.DataFrame(
         styled,
         datatype=["number", "markdown"] + ["number"] * (len(df.columns) - 2),
         interactive=False,
-        pinned_columns=2,
         column_widths=column_widths,
         elem_id="ranking_table",
     )
