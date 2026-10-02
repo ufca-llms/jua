@@ -115,6 +115,8 @@ Note: HF benchmarks require `datasets` (`pip install datasets`).
 python -m jua.cli run --model qwen3-embedding-0.6b --all_datasets
 ```
 
+For a step-by-step guide on cloning the repository, registering a local model, and running it on all datasets with one GPU and adjustable batch size, see [docs/run-local-model-all-datasets.md](docs/run-local-model-all-datasets.md).
+
 ## Evaluation (legacy subcommands)
 ### BM25 (Anserini via pyserini-fastapi)
 1) Start the server:
