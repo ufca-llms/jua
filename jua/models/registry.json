@@ -321,5 +321,60 @@
         "text"
       ]
     }
+  },
+  {
+    "id": "harrier-oss-v1-270m",
+    "adapter": "sbert",
+    "model_name": "microsoft/harrier-oss-v1-270m",
+    "batch_size": 128,
+    "meta": {
+      "name": "microsoft/harrier-oss-v1-270m",
+      "provider": "Microsoft",
+      "url": "https://huggingface.co/microsoft/harrier-oss-v1-270m",
+      "description": "harrier-oss-v1-270m embeddings",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ]
+    }
+  },
+  {
+    "id": "harrier-oss-v1-27b",
+    "adapter": "sbert",
+    "model_name": "microsoft/harrier-oss-v1-27b",
+    "torch_dtype": "float16",
+    "batch_size": 128,
+    "meta": {
+      "name": "microsoft/harrier-oss-v1-27b",
+      "provider": "Microsoft",
+      "url": "https://huggingface.co/microsoft/harrier-oss-v1-27b",
+      "description": "harrier-oss-v1-27b embeddings",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ]
+    }
+  },
+  {
+    "id": "harrier-oss-v1-0.6b",
+    "adapter": "sbert",
+    "model_name": "microsoft/harrier-oss-v1-0.6b",
+    "batch_size": 128,
+    "meta": {
+      "name": "microsoft/harrier-oss-v1-0.6b",
+      "provider": "Microsoft",
+      "url": "https://huggingface.co/microsoft/harrier-oss-v1-0.6b",
+      "description": "harrier-oss-v1-0.6b embeddings",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ]
+    }
   }
 ]

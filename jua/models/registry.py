@@ -58,6 +58,7 @@ def get_model(model_id: str, **kwargs):
             batch_size=kwargs.get("batch_size", entry.get("batch_size", 128)),
             max_length=kwargs.get("max_length", entry.get("max_length", 3072)),
             devices=kwargs.get("devices") or entry.get("devices"),
+            torch_dtype=kwargs.get("torch_dtype") or entry.get("torch_dtype"),
         )
     elif adapter == "openai":
         model = OpenAIEmbeddingsModel(
