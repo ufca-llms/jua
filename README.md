@@ -43,6 +43,15 @@ python -m jua.cli \
   --output_dir results/leaderboard
 ```
 
+To evaluate Gemini 2 embeddings, add `GEMINI_API_KEY` to `.env` and use the registered Gemini model:
+```
+python -m jua.cli \
+  run \
+  --model gemini-embedding-2 \
+  --benchmark jua \
+  --output_dir results/leaderboard
+```
+
 ### Leaderboard output
 Results are saved under `results/leaderboard/<model>/` with one JSON per benchmark task plus `model_meta.json`.
 ```

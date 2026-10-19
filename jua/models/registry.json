@@ -73,6 +73,27 @@
     }
   },
   {
+    "id": "gemini-embedding-2",
+    "adapter": "gemini",
+    "model_name": "gemini-embedding-2",
+    "batch_size": 128,
+    "meta": {
+      "name": "gemini-embedding-2",
+      "provider": "Google",
+      "description": "Gemini 2 embedding model",
+      "url": "https://ai.google.dev/gemini-api/docs/embeddings",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "languages": [
+        "multilingual"
+      ]
+    }
+  },
+  {
     "id": "qwen3-embedding-8b",
     "adapter": "sbert",
     "model_name": "Qwen/Qwen3-Embedding-8B",
