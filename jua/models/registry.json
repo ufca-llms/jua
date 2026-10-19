@@ -37,6 +37,24 @@
     }
   },
   {
+    "id": "embeddinggemma-2",
+    "adapter": "sbert",
+    "model_name": "google/embeddinggemma-2",
+    "batch_size": 128,
+    "meta": {
+      "name": "google/embeddinggemma-2",
+      "provider": "Google",
+      "url": "https://huggingface.co/google/embeddinggemma-2",
+      "description": "EmbeddingGemma 2 embeddings",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ]
+    }
+  },
+  {
     "id": "qwen3-embedding-0.6b",
     "adapter": "sbert",
     "model_name": "Qwen/Qwen3-Embedding-0.6B",
