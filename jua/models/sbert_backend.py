@@ -3,15 +3,21 @@ from __future__ import annotations
 from typing import Iterable
 
 import numpy as np
+import torch
 from sentence_transformers import SentenceTransformer
 
 
 class MultiDeviceSentenceBERT:
-    def __init__(self, model_name: str, max_length: int = 3072, devices: list[str] | None = None):
+    def __init__(self, model_name: str, max_length: int = 3072, devices: list[str] | None = None, torch_dtype: str | None = None):
         self.model_name = model_name
         self.max_length = max_length
         self.devices = devices or []
-        self.model = SentenceTransformer(model_name)
+        model_kwargs = {}
+        if torch_dtype is not None:
+            if torch_dtype not in ("float16", "bfloat16", "float32"):
+                raise ValueError(f"Unsupported torch_dtype: {torch_dtype}")
+            model_kwargs["torch_dtype"] = getattr(torch, torch_dtype)
+        self.model = SentenceTransformer(model_name, model_kwargs=model_kwargs)
         if hasattr(self.model, "max_seq_length"):
             self.model.max_seq_length = max_length
         self.pool = None
