@@ -323,6 +323,40 @@
     }
   },
   {
+    "id": "rerank-harrier-oss-v1-0.6b",
+    "adapter": "rerank/dense",
+    "model_name": "microsoft/harrier-oss-v1-0.6b",
+    "meta": {
+      "name": "microsoft/harrier-oss-v1-0.6b (rerank)",
+      "provider": "Microsoft",
+      "url": "https://huggingface.co/microsoft/harrier-oss-v1-0.6b",
+      "description": "Dense reranking over BM25 results using precomputed Harrier 0.6B embeddings",
+      "model_type": [
+        "reranker"
+      ],
+      "modalities": [
+        "text"
+      ]
+    }
+  },
+  {
+    "id": "rerank-harrier-oss-v1-27b",
+    "adapter": "rerank/dense",
+    "model_name": "microsoft/harrier-oss-v1-27b",
+    "meta": {
+      "name": "microsoft/harrier-oss-v1-27b (rerank)",
+      "provider": "Microsoft",
+      "url": "https://huggingface.co/microsoft/harrier-oss-v1-27b",
+      "description": "Dense reranking over BM25 results using precomputed Harrier 27B embeddings",
+      "model_type": [
+        "reranker"
+      ],
+      "modalities": [
+        "text"
+      ]
+    }
+  },
+  {
     "id": "harrier-oss-v1-270m",
     "adapter": "sbert",
     "model_name": "microsoft/harrier-oss-v1-270m",
