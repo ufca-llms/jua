@@ -1,0 +1,23 @@
+{
+  "model": "sbert/microsoft/harrier-oss-v1-0.6b",
+  "kind": "retrieval",
+  "meta": {
+    "name": "microsoft/harrier-oss-v1-0.6b",
+    "provider": "Microsoft",
+    "description": "harrier-oss-v1-0.6b embeddings",
+    "url": "https://huggingface.co/microsoft/harrier-oss-v1-0.6b",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "extra": {
+      "batch_size": 384,
+      "max_length": 3072
+    }
+  }
+}

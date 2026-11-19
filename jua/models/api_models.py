@@ -42,7 +42,7 @@ def _metrics_bundle(retriever: EvaluateRetrieval, qrels, results) -> Dict[str, A
 
 
 class SbertModel(BaseModel):
-    def __init__(self, model_name: str, batch_size: int = 128, max_length: int = 3072, devices: list[str] | None = None):
+    def __init__(self, model_name: str, batch_size: int = 128, max_length: int = 3072, devices: list[str] | None = None, torch_dtype: str | None = None):
         super().__init__(
             name=f"sbert/{model_name}",
             kind="retrieval",
@@ -53,19 +53,21 @@ class SbertModel(BaseModel):
                 model_type=["dense-retrieval"],
                 modalities=["text"],
                 description="SentenceTransformer embeddings.",
-                extra={"batch_size": batch_size, "max_length": max_length},
+                extra={"batch_size": batch_size, "max_length": max_length, "torch_dtype": torch_dtype},
             ),
         )
         self.model_name = model_name
         self.batch_size = batch_size
         self.max_length = max_length
         self.devices = devices or []
+        self.torch_dtype = torch_dtype
 
     def evaluate(self, corpus, queries, qrels, dataset_name: str, **kwargs) -> ModelResult:
         dense_model = MultiDeviceSentenceBERT(
             self.model_name,
             max_length=self.max_length,
             devices=self.devices,
+            torch_dtype=self.torch_dtype,
         )
         model = DRES(dense_model, batch_size=self.batch_size)
         retriever = EvaluateRetrieval(model, score_function="cos_sim")

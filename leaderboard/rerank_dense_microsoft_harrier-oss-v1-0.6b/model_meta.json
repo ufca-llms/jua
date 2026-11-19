@@ -1,0 +1,20 @@
+{
+  "model": "rerank/dense/microsoft/harrier-oss-v1-0.6b",
+  "kind": "rerank",
+  "meta": {
+    "name": "microsoft/harrier-oss-v1-0.6b (rerank)",
+    "provider": "Microsoft",
+    "description": "Dense reranking over BM25 results using precomputed Harrier 0.6B embeddings",
+    "url": "https://huggingface.co/microsoft/harrier-oss-v1-0.6b",
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "reranker"
+    ],
+    "extra": {
+      "results_file": "results/results/anserini_bm25_normas-tcu.json",
+      "embeddings_dir": "embeddings/NormasTCURetrieval/sbert_microsoft_harrier-oss-v1-0.6b"
+    }
+  }
+}

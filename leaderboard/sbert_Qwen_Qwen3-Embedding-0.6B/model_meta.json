@@ -1,0 +1,27 @@
+{
+  "model": "sbert/Qwen/Qwen3-Embedding-0.6B",
+  "kind": "retrieval",
+  "meta": {
+    "name": "Qwen/Qwen3-Embedding-0.6B",
+    "provider": "Qwen",
+    "description": "Qwen3 Embedding 0.6B",
+    "url": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "languages": [
+      "multilingual"
+    ],
+    "extra": {
+      "batch_size": 256,
+      "max_length": 3072,
+      "torch_dtype": "bfloat16"
+    }
+  }
+}

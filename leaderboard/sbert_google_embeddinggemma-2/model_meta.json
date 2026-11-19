@@ -1,0 +1,23 @@
+{
+  "model": "sbert/google/embeddinggemma-2",
+  "kind": "retrieval",
+  "meta": {
+    "name": "google/embeddinggemma-2",
+    "provider": "Google",
+    "description": "EmbeddingGemma 2 embeddings",
+    "url": "https://huggingface.co/google/embeddinggemma-2",
+    "framework": [
+      "sentence-transformers"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "model_type": [
+      "dense-retrieval"
+    ],
+    "extra": {
+      "batch_size": 128,
+      "max_length": 3072
+    }
+  }
+}
