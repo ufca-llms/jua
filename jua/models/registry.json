@@ -323,6 +323,15 @@
     }
   },
   {
+    "id": "embeddinggemma-300m",
+    "adapter": "sbert",
+    "model_name": "google/embeddinggemma-300m",
+    "batch_size": 128,
+    "meta": {
+      "name": "google/embeddinggemma-300m",
+      "provider": "Google",
+      "url": "https://huggingface.co/google/embeddinggemma-300m",
+      "description": "EmbeddingGemma 300M multilingual text embeddings",
     "id": "rerank-harrier-oss-v1-0.6b",
     "adapter": "rerank/dense",
     "model_name": "microsoft/harrier-oss-v1-0.6b",
