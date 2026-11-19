@@ -303,5 +303,23 @@
         "text"
       ]
     }
+  },
+  {
+    "id": "embeddinggemma-300m",
+    "adapter": "sbert",
+    "model_name": "google/embeddinggemma-300m",
+    "batch_size": 128,
+    "meta": {
+      "name": "google/embeddinggemma-300m",
+      "provider": "Google",
+      "url": "https://huggingface.co/google/embeddinggemma-300m",
+      "description": "EmbeddingGemma 300M multilingual text embeddings",
+      "model_type": [
+        "dense-retrieval"
+      ],
+      "modalities": [
+        "text"
+      ]
+    }
   }
 ]
