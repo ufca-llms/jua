@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Tuple
 import os
+import json
 
 from beir.datasets.data_loader import GenericDataLoader
 from .base import Task
@@ -12,6 +13,20 @@ def _load_local(task: Task) -> Tuple[Dict, Dict, Dict]:
     corpus_path = os.path.join(dataset_path, task.dataset.corpus_file)
     query_path = os.path.join(dataset_path, task.dataset.queries_file)
     qrels_path = os.path.join(dataset_path, task.dataset.qrels_file)
+
+    if qrels_path.endswith(".jsonl"):
+        with open(corpus_path, encoding="utf-8") as f:
+            corpus = {str(row["_id"]): {"title": row.get("title", ""), "text": row.get("text", "")} for row in map(json.loads, f)}
+        with open(query_path, encoding="utf-8") as f:
+            queries = {str(row["_id"]): row["text"] for row in map(json.loads, f)}
+        qrels = {}
+        with open(qrels_path, encoding="utf-8") as f:
+            for row in map(json.loads, f):
+                qid = str(row["query-id"] if "query-id" in row else row["query_id"])
+                did = str(row["corpus-id"] if "corpus-id" in row else row["corpus_id"])
+                qrels.setdefault(qid, {})[did] = int(row["score"])
+        queries = {qid: text for qid, text in queries.items() if qid in qrels}
+        return corpus, queries, qrels
 
     corpus, queries, qrels = GenericDataLoader(
         corpus_file=corpus_path,
